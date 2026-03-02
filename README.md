@@ -1,6 +1,6 @@
 # ETERNAFALL : The Birth of the First Mark
 
-!![Development Progress](https://progress-bar.xyz/45/?title=Game%20Completion)
+![Progress](https://progress-bar.xyz/15/?title=Game%20Completion)
 
 A pure Java 2D RPG featuring free overworld exploration and deterministic turn-based combat.
 
