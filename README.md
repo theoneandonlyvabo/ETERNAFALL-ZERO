@@ -1,7 +1,8 @@
 # ETERNAFALL : The Birth of the First Mark
 
 <p align="center">
-  <img src="https://progress-bar.xyz/15/?width=900&height=28" />
+    Development Progress
+  <img src="https://progress-bar.xyz/15/?width=750&height=28" />
 </p>
 
 <p align="center">
