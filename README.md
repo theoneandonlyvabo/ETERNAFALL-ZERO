@@ -1,6 +1,6 @@
 # ETERNAFALL : The Birth of the First Mark
 
-![Progress](https://progress-bar.xyz/15/?title=Dev%20Progress)
+![Progress](https://progress-bar.xyz/15/?title=Development&width=800)
 
 A pure Java 2D RPG featuring free overworld exploration and deterministic turn-based combat.
 
