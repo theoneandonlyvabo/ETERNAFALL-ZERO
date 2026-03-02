@@ -1,7 +1,10 @@
 # ETERNAFALL : The Birth of the First Mark
 
 <p align="center">
-    Development Progress\n
+  <b>Game Development Progress</b>
+</p>
+
+<p align="center">
   <img src="https://progress-bar.xyz/15/?width=750&height=28" />
 </p>
 
