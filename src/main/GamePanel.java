@@ -1,7 +1,7 @@
 package main;
 
 import entity.Player;
-import tiles.TileManager;
+import world.TileManager;
 
 import java.awt.Color;
 import java.awt.Dimension;
