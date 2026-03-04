@@ -25,8 +25,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     // WORLD SETTINGS
 
-    public final int maxWorldCol = 60; // World Width Limit
-    public final int maxWorldRow = 60; // World Height Limit
+    public final int maxWorldCol = 100; // World Width Limit
+    public final int maxWorldRow = 100; // World Height Limit
 
     public final int worldWidth = tileSize * maxWorldCol;
     public final int worldHeight = tileSize * maxWorldRow;
