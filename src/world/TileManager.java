@@ -12,8 +12,8 @@ import main.GamePanel;
 public class TileManager {
 
     GamePanel gp;
-    Tile[] tile;
-    int mapTileNum[][];
+    public Tile[] tile;
+    public int mapTileNum[][];
 
     public TileManager(GamePanel gp) {
         this.gp = gp;
@@ -53,7 +53,6 @@ public class TileManager {
             tile[4] = new Tile();
             tile[4].image = ImageIO.read(getClass().getClassLoader().getResourceAsStream (
                 "assets/tiles/map0/4.png" ));
-            tile[4].collision = true;
 
             tile[5] = new Tile();
             tile[5].image = ImageIO.read(getClass().getClassLoader().getResourceAsStream (
@@ -73,7 +72,6 @@ public class TileManager {
             tile[8] = new Tile();
             tile[8].image = ImageIO.read(getClass().getClassLoader().getResourceAsStream (
                 "assets/tiles/map0/8.png" ));
-            tile[8].collision = true;
 
             tile[9] = new Tile();
             tile[9].image = ImageIO.read(getClass().getClassLoader().getResourceAsStream (
@@ -83,7 +81,6 @@ public class TileManager {
             tile[10] = new Tile();
             tile[10].image = ImageIO.read(getClass().getClassLoader().getResourceAsStream (
                 "assets/tiles/map0/10.png" ));
-            tile[10].collision = true;
 
             tile[11] = new Tile();
             tile[11].image = ImageIO.read(getClass().getClassLoader().getResourceAsStream (
@@ -138,7 +135,6 @@ public class TileManager {
             tile[21] = new Tile();
             tile[21].image = ImageIO.read(getClass().getClassLoader().getResourceAsStream (
                 "assets/tiles/map0/21.png" ));
-            tile[21].collision = true;
 
             tile[22] = new Tile();
             tile[22].image = ImageIO.read(getClass().getClassLoader().getResourceAsStream (
@@ -148,7 +144,6 @@ public class TileManager {
             tile[23] = new Tile();
             tile[23].image = ImageIO.read(getClass().getClassLoader().getResourceAsStream (
                 "assets/tiles/map0/23.png" ));
-            tile[23].collision = true;
 
             tile[24] = new Tile();
             tile[24].image = ImageIO.read(getClass().getClassLoader().getResourceAsStream (
