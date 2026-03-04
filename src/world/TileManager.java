@@ -22,7 +22,7 @@ public class TileManager {
         mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
 
         getTileImage();
-        loadMap("/assets/maps/map0.txt");
+        loadMap("assets/maps/map0.txt");
     }
 
     // Assets Importing
@@ -200,7 +200,11 @@ public class TileManager {
 
         try {
 
-            InputStream is = getClass().getResourceAsStream(filePath);
+            InputStream is = getClass().getClassLoader().getResourceAsStream(filePath);
+            if (is == null) {
+                System.err.println("Error: Could not load map file: " + filePath);
+                return;
+            }
             BufferedReader br = new BufferedReader (new InputStreamReader(is));
 
             int col = 0;
