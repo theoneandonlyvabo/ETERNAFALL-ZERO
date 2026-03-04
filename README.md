@@ -1,4 +1,4 @@
-# ETERNAFALL : The Birth of the First Mark
+<h1> ETERNAFALL : The Birth of the First Mark </h1>
 
 <p align="center">
   <b>Game Development Progress</b>
