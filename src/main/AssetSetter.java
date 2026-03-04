@@ -1,6 +1,5 @@
 package main;
 
-import object._Door01;
 import object._FlaskRed;
 
 public class AssetSetter {
@@ -21,14 +20,10 @@ public class AssetSetter {
         // (worldX * gp.tileSize, worldY * gp.tileSize);
         // gp.obj[0].gp = gp;
 
-        gp.obj[0] = new _FlaskRed
-        (6 * gp.tileSize, 6 * gp.tileSize);
+        gp.obj[0] = new _FlaskRed();
+        gp.obj[0].worldX = 6 * gp.tileSize;
+        gp.obj[0].worldY = 6 * gp.tileSize;
         gp.obj[0].gp = gp;
-
-        gp.obj[1] = new _Door01
-        (20 * gp.tileSize, 6 * gp.tileSize);
-        gp.obj[1].gp = gp;
-
     }
     
 }
