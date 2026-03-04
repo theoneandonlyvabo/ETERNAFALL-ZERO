@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="https://progress-bar.xyz/11,2/?width=750&height=28"/>
+  <img src="https://progress-bar.xyz/11/?width=750&height=28"/>
 </p>
 
 <p align="center">
