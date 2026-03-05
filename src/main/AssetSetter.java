@@ -23,10 +23,7 @@ public class AssetSetter {
         gp.obj[0] = new _FlaskRed();
         gp.obj[0].worldX = 6 * gp.tileSize;
         gp.obj[0].worldY = 6 * gp.tileSize;
-
-        gp.obj[0] = new _FlaskRed();
-        gp.obj[0].worldX = 4 * gp.tileSize;
-        gp.obj[0].worldY = 10 * gp.tileSize;
+        gp.obj[0].gp = gp;
     }
     
 }

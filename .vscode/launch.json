@@ -16,8 +16,10 @@
             "name": "Run Game",
             "request": "launch",
             "mainClass": "main.Main",
-            "projectName": "Project-eternal2D",
-        "cwd": "${workspaceFolder}"
+            "classPaths": [
+                "${workspaceFolder}/bin",
+                "${workspaceFolder}/assets"
+            ]
         }
     ]
 }
