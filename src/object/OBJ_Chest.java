@@ -1,9 +1,9 @@
-package objects;
+package object;
 
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class OBJ_Chest extends ObjectHandler {
+public class OBJ_Chest extends ObjectManager {
 
     public OBJ_Chest() {
 
@@ -11,7 +11,7 @@ public class OBJ_Chest extends ObjectHandler {
         
         try {
 
-            image = ImageIO.read(getClass().getResourceAsStream("/objects/chest_wood_01.png"));
+            image = ImageIO.read(getClass().getResourceAsStream("assets/object/chest_wood_01.png"));
             
         } catch (IOException e) {
             e.printStackTrace();
