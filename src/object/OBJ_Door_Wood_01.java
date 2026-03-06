@@ -17,6 +17,8 @@ public class OBJ_Door_Wood_01 extends ObjectManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        collision = true;
     }
 
 }

@@ -17,6 +17,8 @@ public class OBJ_Chest_Wood_02 extends ObjectManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        collision = true;
     }
 
 }

@@ -3,8 +3,8 @@ package entity;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.io.FileInputStream;
+import java.io.IOException;
 import javax.imageio.ImageIO;
 import main.GamePanel;
 import main.KeyHandler;
@@ -25,9 +25,15 @@ public class Player extends Entity {
         screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
 
+        // Playe Hitbox Settings
+
         hitbox = new Rectangle();
         hitbox.x = 14;
         hitbox.y = 30;
+
+        hitboxDefaultX = hitbox.x;
+        hitboxDefaultY = hitbox.y;
+
         hitbox.width = 20;
         hitbox.height = 16;
 
@@ -92,6 +98,12 @@ public class Player extends Entity {
             collisionMade = false;
             gp.cChecker.checkTile(this);
 
+            // Check Object Collision
+
+            int objIndex = gp.cChecker.checkObject(this, true);
+            
+            interact(objIndex);
+
             // If Collision is False, Player Can Move
 
             if (collisionMade == false) {
@@ -129,9 +141,18 @@ public class Player extends Entity {
 
     }
 
+    public void interact(int i) {
+
+        if (i != 999) {
+            gp.obj[i] = null;
+        }
+
+    }
+
     public void draw(Graphics2D g2) {
 
         BufferedImage image = null;
+
         switch (direction) {
 
             case "up":
