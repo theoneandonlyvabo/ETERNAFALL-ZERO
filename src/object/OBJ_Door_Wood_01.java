@@ -1,17 +1,18 @@
 package object;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class OBJ_Chest extends ObjectManager {
+public class OBJ_Door_Wood_01 extends ObjectManager {
 
-    public OBJ_Chest() {
+    public OBJ_Door_Wood_01() {
 
         name = "Chest";
         
         try {
 
-            image = ImageIO.read(getClass().getResourceAsStream("assets/object/chest_wood_01.png"));
+            image = ImageIO.read(new FileInputStream("res/object/door_wood_01.png"));
             
         } catch (IOException e) {
             e.printStackTrace();
