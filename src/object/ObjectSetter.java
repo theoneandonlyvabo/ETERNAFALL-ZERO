@@ -1,8 +1,8 @@
-package main;
+package object;
 
-import object.OBJ_Chest_Wood_02;
+import main.GamePanel;
 import object.OBJ_Door_Wood_01;
-
+import object.OBJ_Chest_Wood_02;
 
 public class ObjectSetter {
     

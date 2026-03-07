@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JPanel;
 import object.ObjectManager;
+import object.ObjectSetter;
 import world.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -47,6 +48,21 @@ public class GamePanel extends JPanel implements Runnable {
     public CollisionChecker cChecker = new CollisionChecker(this);
     public ObjectSetter oSetter = new ObjectSetter(this);
     Thread gameThread;
+
+    // GAME STATE
+
+    public static final int worldState = 0;
+    public static final int pausedState = 1;
+    public static final int battleState = 2;
+    public static final int dialogState = 3;
+    public static final int inventoryState = 4;
+    public static final int transitionState = 5;
+
+    public int gameState = worldState;  
+
+    // UI SETTINGS
+
+    public UserInterface ui = new UserInterface(this);
 
     // ENTITY AND OBJECT
 
@@ -145,6 +161,8 @@ public class GamePanel extends JPanel implements Runnable {
         // Player
         player.draw(g2);
 
+        // UI
+        ui.draw(g2);
 
         // Screen Effects
         if (fading) {
@@ -152,7 +170,7 @@ public class GamePanel extends JPanel implements Runnable {
             g2.setColor(Color.black);
             g2.fillRect(0, 0, screenWidth, screenHeight);
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
-}
+        }
 
         g2.dispose();
     }
