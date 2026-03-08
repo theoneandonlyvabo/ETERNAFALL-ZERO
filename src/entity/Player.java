@@ -1,6 +1,5 @@
 package entity;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -221,8 +220,8 @@ public class Player extends Entity {
 
         g2.drawImage(image, screenX, screenY, null);
 
-        g2.setColor(Color.red);
-        g2.drawRect(screenX + hitbox.x, screenY + hitbox.y, hitbox.width, hitbox.height);
+        // g2.setColor(Color.red);
+        // g2.drawRect(screenX + hitbox.x, screenY + hitbox.y, hitbox.width, hitbox.height);
 
     }
 }
