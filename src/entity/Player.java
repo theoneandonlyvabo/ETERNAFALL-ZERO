@@ -4,10 +4,10 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import main.GamePanel;
+import main.GameTool;
 import main.KeyHandler;
 
 public class Player extends Entity {
@@ -53,30 +53,41 @@ public class Player extends Entity {
 
     public void getPlayerImage() {
 
+        up1 = setup("efplayer_u_1");
+        up2 = setup("efplayer_u_2");
+        up3 = setup("efplayer_u_3");
+        up4 = setup("efplayer_u_4");
+        down1 = setup("efplayer_d_1");
+        down2 = setup("efplayer_d_2");
+        down3 = setup("efplayer_d_3");
+        down4 = setup("efplayer_d_4");
+        left1 = setup("efplayer_l_1");
+        left2 = setup("efplayer_l_2");
+        left3 = setup("efplayer_l_3");
+        left4 = setup("efplayer_l_4");
+        right1 = setup("efplayer_r_1");
+        right2 = setup("efplayer_r_2");
+        right3 = setup("efplayer_r_3");
+        right4 = setup("efplayer_r_4");
+
+    }
+
+    public BufferedImage setup(String imageName) {
+
+        GameTool gTool = new GameTool();
+        BufferedImage image = null;
+
         try {
 
-            System.out.println("res/player/efplayer_u_1.png");
-
-            up1 = ImageIO.read(new FileInputStream("res/player/efplayer_u_1.png"));
-            up2 = ImageIO.read(new FileInputStream("res/player/efplayer_u_2.png"));
-            up3 = ImageIO.read(new FileInputStream("res/player/efplayer_u_3.png"));
-            up4 = ImageIO.read(new FileInputStream("res/player/efplayer_u_4.png"));
-            down1 = ImageIO.read(new FileInputStream("res/player/efplayer_d_1.png"));
-            down2 = ImageIO.read(new FileInputStream("res/player/efplayer_d_2.png"));
-            down3 = ImageIO.read(new FileInputStream("res/player/efplayer_d_3.png"));
-            down4 = ImageIO.read(new FileInputStream("res/player/efplayer_d_4.png"));
-            left1 = ImageIO.read(new FileInputStream("res/player/efplayer_l_1.png"));
-            left2 = ImageIO.read(new FileInputStream("res/player/efplayer_l_2.png"));
-            left3 = ImageIO.read(new FileInputStream("res/player/efplayer_l_3.png"));
-            left4 = ImageIO.read(new FileInputStream("res/player/efplayer_l_4.png"));
-            right1 = ImageIO.read(new FileInputStream("res/player/efplayer_r_1.png"));
-            right2 = ImageIO.read(new FileInputStream("res/player/efplayer_r_2.png"));
-            right3 = ImageIO.read(new FileInputStream("res/player/efplayer_r_3.png"));
-            right4 = ImageIO.read(new FileInputStream("res/player/efplayer_r_4.png"));
-
+            image = ImageIO.read(getClass().getResourceAsStream("/player/" + imageName + ".png")); 
+            image = gTool.scaleImage(image, gp.tileSize, gp.tileSize);
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return image;
+
     }
 
     public void update() {
@@ -208,10 +219,9 @@ public class Player extends Entity {
 
         }
 
-        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY, null);
 
         g2.setColor(Color.red);
-
         g2.drawRect(screenX + hitbox.x, screenY + hitbox.y, hitbox.width, hitbox.height);
 
     }

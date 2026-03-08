@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import main.GamePanel;
+import main.GameTool;
 
 public class ObjectManager {
 
@@ -14,6 +15,7 @@ public class ObjectManager {
     public Rectangle hitbox = new Rectangle(0, 0, 48, 48);
     public int hitboxDefaultX = 0;
     public int hitboxDefaultY = 0;
+    GameTool gTool = new GameTool();
 
     public void draw(Graphics2D g2, GamePanel gp) {
 
@@ -25,7 +27,7 @@ public class ObjectManager {
             worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
             worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) {
 
-                g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+                g2.drawImage(image, screenX, screenY, null);
         }
 
     }

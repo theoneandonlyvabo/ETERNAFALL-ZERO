@@ -52,11 +52,10 @@ public class GamePanel extends JPanel implements Runnable {
     // GAME STATE
 
     public static final int worldState = 0;
-    public static final int pausedState = 1;
+    public static final int menuState = 1;
     public static final int battleState = 2;
     public static final int dialogState = 3;
-    public static final int inventoryState = 4;
-    public static final int transitionState = 5;
+    public static final int transitionState = 4;
 
     public int gameState = worldState;  
 
@@ -148,6 +147,12 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
+        // Debug
+        long drawStart = 0;
+        if (keyH.checkDrawTime == true) {
+            drawStart = System.nanoTime();
+        }
+
         // Tile
         tileM.draw(g2);
 
@@ -163,6 +168,15 @@ public class GamePanel extends JPanel implements Runnable {
 
         // UI
         ui.draw(g2);
+
+        // Debug
+        if (keyH.checkDrawTime == true) {
+            long drawEnd = System.nanoTime();
+            long passed = drawEnd - drawStart;
+            g2.setColor(Color.white);
+            g2.drawString("Draw Time: " + passed, 100, 30);
+            System.out.println("Frame Time: " + passed);
+        }
 
         // Screen Effects
         if (fading) {

@@ -1,18 +1,23 @@
 package object;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import main.GamePanel;
 
 public class OBJ_Door_Wood_02 extends ObjectManager {
 
-    public OBJ_Door_Wood_02() {
+    GamePanel gp;
 
+    public OBJ_Door_Wood_02(GamePanel gp) {
+
+        this.gp = gp;
+        
         name = "Chest";
         
         try {
 
-            image = ImageIO.read(new FileInputStream("res/object/door_wood_02.png"));
+            image = ImageIO.read(getClass().getResourceAsStream("/object/door_wood_02.png"));
+            image = gTool.scaleImage(image, gp.tileSize, gp.tileSize);
             
         } catch (IOException e) {
             e.printStackTrace();

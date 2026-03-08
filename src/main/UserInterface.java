@@ -22,13 +22,11 @@ public class UserInterface {
             
             case GamePanel.worldState -> hud.draw(g2);
             
-            case GamePanel.pausedState -> {}
+            case GamePanel.menuState -> {}
             
             case GamePanel.battleState -> {}
             
             case GamePanel.dialogState -> {}
-            
-            case GamePanel.inventoryState -> {}
             
             case GamePanel.transitionState -> {}
     }
