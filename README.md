@@ -5,11 +5,11 @@
 </p>
 
 <p align="center">
-  <img src="https://progress-bar.xyz/31/?width=750&height=28"/>
+  <img src="https://progress-bar.xyz/32/?width=750&height=28"/>
 </p>
 
 <p align="center">
-  <b>Version 0.2.1</b>
+  <b>Version 0.2.2</b>
 </p>
 
 <p align="center">

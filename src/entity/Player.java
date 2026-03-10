@@ -43,10 +43,10 @@ public class Player extends Entity {
 
     public void setDefaultValues() {
 
-        worldX = gp.tileSize * 3;
-        worldY = gp.tileSize * 9;
+        worldX = gp.tileSize * 7;
+        worldY = gp.tileSize * 4;
         speed = gp.scale;
-        direction = "right";
+        direction = "down";
 
     }
 
@@ -157,7 +157,9 @@ public class Player extends Entity {
     public void interact(int i) {
 
         if (i != 999) {
-            gp.obj[i] = null;
+
+            String testDummy = gp.obj[i].name;
+
         }
 
     }

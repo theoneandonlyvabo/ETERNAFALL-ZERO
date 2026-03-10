@@ -78,59 +78,45 @@ public class CollisionChecker {
 
     public int checkObject(Entity entity, boolean player) {
 
-        int index = 999;
+    int index = 999;
 
-        for (int i = 0; i < gp.obj.length; i++) {
+    for (int i = 0; i < gp.obj.length; i++) {
 
-            if (gp.obj[i] != null) {
-                entity.hitbox.x = entity.worldX + entity.hitbox.x;
-                entity.hitbox.y = entity.worldY + entity.hitbox.y;
+        if (gp.obj[i] != null) {
 
-                gp.obj[i].hitbox.x = gp.obj[i].worldX + gp.obj[i].hitbox.x;
-                gp.obj[i].hitbox.y = gp.obj[i].worldY + gp.obj[i].hitbox.y;
+            // Pakai default sebagai base, bukan hitbox.x yang sudah ter-modifikasi
+            int entityHitboxX = entity.worldX + entity.hitboxDefaultX;
+            int entityHitboxY = entity.worldY + entity.hitboxDefaultY;
+            int objHitboxX = gp.obj[i].worldX + gp.obj[i].hitboxDefaultX;
+            int objHitboxY = gp.obj[i].worldY + gp.obj[i].hitboxDefaultY;
 
-                switch (entity.direction) {
+            entity.hitbox.x = entityHitboxX;
+            entity.hitbox.y = entityHitboxY;
+            gp.obj[i].hitbox.x = objHitboxX;
+            gp.obj[i].hitbox.y = objHitboxY;
 
-                    case "up" : 
-                        entity.hitbox.y -= entity.speed;
-                        if (entity.hitbox.intersects(gp.obj[i].hitbox)) {
-                            if (gp.obj[i].collision == true) {entity.collisionMade = true;}
-                            if (player == true) {index = i;}
-                        } break;
+            switch (entity.direction) {
 
-                    case "down" : 
-                        entity.hitbox.y += entity.speed; 
-                        if (entity.hitbox.intersects(gp.obj[i].hitbox)) {
-                            if (gp.obj[i].collision == true) {entity.collisionMade = true;}
-                            if (player == true) {index = i;}
-                        } break;
-
-                    case "left" : 
-                        entity.hitbox.x -= entity.speed;
-                        if (entity.hitbox.intersects(gp.obj[i].hitbox)) {
-                            if (gp.obj[i].collision == true) {entity.collisionMade = true;}
-                            if (player == true) {index = i;}
-                        } break ;
-
-                    case "right" : 
-                        entity.hitbox.x += entity.speed; 
-                        if (entity.hitbox.intersects(gp.obj[i].hitbox)) {
-                            if (gp.obj[i].collision == true) {entity.collisionMade = true;}
-                            if (player == true) {index = i;}
-                        } break ;
-                        
-                }
-
-                entity.hitbox.x = entity.hitboxDefaultX;
-                entity.hitbox.y = entity.hitboxDefaultY;
-
-                gp.obj[i].hitbox.x = gp.obj[i].hitboxDefaultX;
-                gp.obj[i].hitbox.y = gp.obj[i].hitboxDefaultY;
+                case "up":    entity.hitbox.y -= entity.speed; break;
+                case "down":  entity.hitbox.y += entity.speed; break;
+                case "left":  entity.hitbox.x -= entity.speed; break;
+                case "right": entity.hitbox.x += entity.speed; break;
+                
             }
 
+            if (entity.hitbox.intersects(gp.obj[i].hitbox)) {
+                if (gp.obj[i].collision == true) { entity.collisionMade = true; }
+                if (player == true) { index = i; }
+            }
+
+            // Reset
+            entity.hitbox.x = entity.hitboxDefaultX;
+            entity.hitbox.y = entity.hitboxDefaultY;
+            gp.obj[i].hitbox.x = gp.obj[i].hitboxDefaultX;
+            gp.obj[i].hitbox.y = gp.obj[i].hitboxDefaultY;
         }
-
-        return index;
-
     }
+
+    return index;
+}
 }
