@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <b>Version 0.2.2</b>
+  <b>Version 0.2.3</b>
 </p>
 
 <p align="center">
