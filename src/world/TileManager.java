@@ -22,64 +22,45 @@ public class TileManager {
         mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
 
         getTileImage();
-        loadMap("/maps/map0.txt");
+        loadMap("/maps/testing.txt");
     }
 
     public void getTileImage() {
-        setup(0,  true);
-        setup(1,  false);
-        setup(2,  false);
-        setup(3,  true);
-        setup(4,  false);
-        setup(5,  true);
-        setup(6,  true);
-        setup(7,  true);
-        setup(8,  false);
-        setup(9,  true);
-        setup(10, false);
-        setup(11, true);
-        setup(12, true);
-        setup(13, true);
-        setup(14, true);
-        setup(15, true);
-        setup(16, true);
-        setup(17, true);
-        setup(18, true);
-        setup(19, true);
-        setup(20, true);
-        setup(21, false);
-        setup(22, true);
-        setup(23, false);
-        setup(24, true);
-        setup(25, true);
-        setup(26, true);
-        setup(27, true);
-        setup(28, true);
-        setup(29, true);
-        setup(30, true);
-        setup(31, true);
-        setup(32, true);
+
+        setup(0, "blank", true);
+        setup(1, "densedirt", false);
+        setup(2, "densegreengrass", false);
+        setup(3, "densegoldgrass", false);
+        setup(4, "water", true);
+        setup(5, "stonebrickwall", true);
+        
     }
 
-    public void setup(int index, boolean collision) {
+    public void setup(int index, String imagePath, boolean collision) {
+
         GameTool gTool = new GameTool();
+
         try {
-            InputStream is = getClass().getResourceAsStream("/tiles/map0/" + index + ".png");
+            InputStream is = getClass().getResourceAsStream("/tiles/t_" + imagePath + ".png");
             if (is == null) {
-                System.err.println("Tile not found: /tiles/map0/" + index + ".png");
+                System.err.println("Tile not found: /tiles/t_" + imagePath + ".png");
                 return;
             }
+
             tile[index] = new Tile();
             tile[index].image = ImageIO.read(is);
             tile[index].image = gTool.scaleImage(tile[index].image, gp.tileSize, gp.tileSize);
             tile[index].collision = collision;
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void loadMap(String resourcePath) {
+
         try {
+
             InputStream is = getClass().getResourceAsStream(resourcePath);
             if (is == null) {
                 System.err.println("Map not found: " + resourcePath);
