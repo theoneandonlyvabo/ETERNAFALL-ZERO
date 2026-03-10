@@ -17,9 +17,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     final int originalTileSize = 16; // Single Tile Game Resolution (16x16 Pixels)
 
-    public final int maxScreenCol = 16; // Screen Width (Px)
-    public final int maxScreenRow = 9; // Screen Height (Px)
-    public final int scale = 6; // Screen Size
+    public final int maxScreenCol = 19; // Screen Width (Px)
+    public final int maxScreenRow = 11; // Screen Height (Px)
+    public final int scale = 5; // Screen Size
 
     public final int tileSize = originalTileSize * scale;
     public final int screenWidth = tileSize * maxScreenCol;
@@ -42,7 +42,7 @@ public class GamePanel extends JPanel implements Runnable {
     // SYSTEM
 
     TileManager tileM = new TileManager(this);
-    KeyHandler keyH = new KeyHandler();
+    KeyHandler keyH = new KeyHandler(this);
     Sound music = new Sound();
     Sound SFX = new Sound();
     public CollisionChecker cChecker = new CollisionChecker(this);
@@ -51,13 +51,11 @@ public class GamePanel extends JPanel implements Runnable {
 
     // GAME STATE
 
-    public static final int worldState = 0;
-    public static final int menuState = 1;
+    public int gameState;
+    
+    public static final int menuState = 0;
+    public static final int worldState = 1;
     public static final int battleState = 2;
-    public static final int dialogState = 3;
-    public static final int transitionState = 4;
-
-    public int gameState = worldState;  
 
     // UI SETTINGS
 
@@ -69,11 +67,13 @@ public class GamePanel extends JPanel implements Runnable {
     public ObjectManager obj[] = new ObjectManager[10];
 
     public GamePanel() {
+
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
+
     }
 
     public void loadMap() {
@@ -84,11 +84,15 @@ public class GamePanel extends JPanel implements Runnable {
 
         playMusic(0);
 
+        gameState = worldState;  
+
     }
 
     public void startGameThread() {
+
         gameThread = new Thread(this);
         gameThread.start();
+
     }
 
     @Override
@@ -121,18 +125,28 @@ public class GamePanel extends JPanel implements Runnable {
                 drawCount = 0;
                 timer = 0;
             }
+
         }
     }
 
     public void update() {
 
-        player.update();
+        if (gameState == worldState) {
+
+            player.update();
+
+        }
+
+        if (gameState == menuState) {
+
+            // Menu Update
+
+        }
 
         if (fading) {
 
             // Fade Duration
             fadeAlpha -= 1f / 120f;
-
                 if (fadeAlpha <= 0) {
                      fadeAlpha = 0;
                     fading = false;
