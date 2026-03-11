@@ -73,8 +73,8 @@ Build variables interact with this loop:
 
 - 🛡️ **Armor** — 3 slots with set bonuses
 - ⚔️ **Armament** — shapes your offensive options
-- 💎 **Talisman** — passive tradeoffs, AP for HP and beyond
-- 🔄 **Stance** — locked mid-battle; might disable parry entirely for burst potential
+- 💎 **Accessory** — passive tradeoffs, AP for HP and beyond
+- 🔄 **Path** — locked mid-battle; might disable parry entirely for burst potential
 
 ---
 
