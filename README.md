@@ -94,13 +94,13 @@ Build variables interact with this loop:
 
 ## ☕ Support
 
+<div align="center">
+
 This project is built solo, from scratch, in pure Java. No engine, no shortcuts.
 
 If you want to support the development, any contribution helps keep it going.
 
-<div align="center">
-
-![Saweria](https://saweria.co/widgets/qr?streamKey=aac4bbd7609515e54b33a8977fd19bea)
+![Saweria](assets/saweria-qr.png)
 
 **[saweria.co/aireladrivano](https://saweria.co/aireladrivano)**
 
