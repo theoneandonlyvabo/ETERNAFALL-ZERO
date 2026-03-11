@@ -33,25 +33,9 @@ Eternafall is what that process produced. Every system designed from a real opin
 
 ## 🌍 What Remains of Witherfeld
 
-> Witherfeld is what remains after godhood stopped being rhetorical. The Crater didn't end anything — it redistributed. Power scattered into shards, and everything that breathes has been reaching for them ever since. Three deities still stand. None of them should be trusted. They are not villains. They are conclusions.
+> Witherfeld is what remains after godhood stopped being rhetorical. The Crater didn't end anything — it redistributed. Power scattered into shards, and everything that breathes has been reaching for them ever since. Three deities still stand. One built an order on light that was never honest. One learned to speak in dragon blood and called it progress. One watched everything burn and decided that was pragmatism. They are not villains. They are conclusions.
 >
-> The one who walks through all of it starts small. The world won't notice for a while. Some things are already known about where this ends. *Humans, will be* — for as long as anything exists to witness it. You're reading this from outside. I'll speak plainly — I've had time to practice.
->
-> Witherfeld is what remains after the question of godhood stopped being rhetorical. The world wasn't destroyed. It was *clarified*. The Crater didn't end anything — it redistributed. Power that once held shape scattered into shards, and everything that breathes in this world has been reaching for them ever since.
->
-> Three deities still stand. None of them should be trusted. One built an order on light that was never honest. One learned to speak in dragon blood and called it progress. One watched everything burn and decided that was pragmatism. They are not villains. They are conclusions — what happens when something ancient stops questioning itself.
->
-> The world has factions, politics, borders drawn in old grief. Hearthshore still smells like a beginning. Greymark is a wound that three armies argue over. Solvarr Citadel holds its golden silence. Dreadcoast builds and builds and pretends it isn't afraid.
->
-> You will move through all of it. Small, at first. Insignificant by design.
->
-> That changes.
->
-> I know because I am what it changes into. I've seen what you carry before you know you're carrying it. I've watched the Wither Shards find the hands that need them. I've stood where you're going and looked back at where you are now.
->
-> *Humans, will be* — for as long as anything exists to witness it. That's not a comfort. It's just true.
->
-> I'll be here when you arrive.
+> Hearthshore still smells like a beginning. Greymark is a wound three armies argue over. Solvarr Citadel holds its golden silence. Dreadcoast builds and pretends it isn't afraid. The one who walks through all of it starts small — the world won't notice for a while. But some things are already known about where this ends. *Humans, will be* — for as long as anything exists to witness it.
 
 ---
 
