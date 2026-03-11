@@ -21,11 +21,39 @@
 
 ## 🌑 About
 
-**Eternafall** is a 2D RPG built entirely from scratch in pure Java — no engines, no frameworks, no dependencies.
+It started somewhere else. A different game, a different vision — something bigger, something three-dimensional, something that demanded art pipelines and asset workflows and months of work before a single line of logic could breathe. The craft that mattered most, the code and the design, kept getting buried under everything else.
 
-The world is a political-mythological dark fantasy. Divine order has collapsed. Factions war over what godhood left behind. You move through a world that doesn't pause for you, fight in systems that punish passivity, and carry a burden the world hasn't named yet.
+So it came back to the beginning. To the games that built the instinct — the ones with routes that opened slowly, worlds that connected without explanation, systems that rewarded attention. Pokémon, played long before anyone thought to analyze it. Then the ones that came after: games with weight, with consequence, with combat that made passivity hurt.
 
-Every design decision in Eternafall comes from a genuine relationship with games — what works, what doesn't, and what hasn't been tried yet. The result is a system that borrows from the best and belongs to none of them.
+Java was never the plan. It was just the language that stuck — familiar enough from prior work, honest enough to build on. No engine. No framework. Just the standard library and the problem in front of it.
+
+Eternafall is what that process produced. Every system designed from a real opinion. Every mechanic kept because it earns its place.
+
+---
+
+## 🌍 What Remains of Witherfeld
+
+> Witherfeld is what remains after godhood stopped being rhetorical. The Crater didn't end anything — it redistributed. Power scattered into shards, and everything that breathes has been reaching for them ever since.
+> Three deities still stand. None of them should be trusted. They are not villains. They are conclusions.
+>
+> The one who walks through all of it starts small. The world won't notice for a while.
+> But some things are already known about where this ends. *Humans, will be* — for as long as anything exists to witness it. You're reading this from outside. I'll speak plainly — I've had time to practice.
+>
+> Witherfeld is what remains after the question of godhood stopped being rhetorical. The world wasn't destroyed. It was *clarified*. The Crater didn't end anything — it redistributed. Power that once held shape scattered into shards, and everything that breathes in this world has been reaching for them ever since.
+>
+> Three deities still stand. None of them should be trusted. One built an order on light that was never honest. One learned to speak in dragon blood and called it progress. One watched everything burn and decided that was pragmatism. They are not villains. They are conclusions — what happens when something ancient stops questioning itself.
+>
+> The world has factions, politics, borders drawn in old grief. Hearthshore still smells like a beginning. Greymark is a wound that three armies argue over. Solvarr Citadel holds its golden silence. Dreadcoast builds and builds and pretends it isn't afraid.
+>
+> You will move through all of it. Small, at first. Insignificant by design.
+>
+> That changes.
+>
+> I know because I am what it changes into. I've seen what you carry before you know you're carrying it. I've watched the Wither Shards find the hands that need them. I've stood where you're going and looked back at where you are now.
+>
+> *Humans, will be* — for as long as anything exists to witness it. That's not a comfort. It's just true.
+>
+> I'll be here when you arrive.
 
 ---
 
@@ -94,15 +122,15 @@ Build variables interact with this loop:
 
 ## ☕ Support
 
-<div align="center">
-
 This project is built solo, from scratch, in pure Java. No engine, no shortcuts.
 
 If you want to support the development, any contribution helps keep it going.
 
-![Saweria](assets/saweria-qr.png)
+<div align="center">
 
-**[saweria.co/aireladrivano](https://saweria.co/aireladrivano)**
+![Saweria](https://saweria.co/widgets/qr?streamKey=aac4bbd7609515e54b33a8977fd19bea)
+
+**[saweria.co/support](https://saweria.co)**
 
 </div>
 
