@@ -7,28 +7,24 @@ import java.awt.Graphics2D;
 public class UserInterface {
 
     GamePanel gp;
-
     HUD hud;
     UI_Paused paused;
 
     public UserInterface(GamePanel gp) {
-
         this.gp = gp;
         hud = new HUD(gp);
         paused = new UI_Paused(gp);
-        
     }
 
     public void draw(Graphics2D g2) {
 
-        if (gp.gameState == gp.worldState) {
+        if (gp.gameState == GamePanel.worldState) {
             hud.draw(g2);
-        } else if (gp.gameState == gp.menuState) {
+            hud.drawInteractPrompt(g2);
+        } else if (gp.gameState == GamePanel.menuState) {
             paused.draw(g2);
-        } else if (gp.gameState == gp.battleState) {
+        } else if (gp.gameState == GamePanel.battleState) {
             // battle
         }
-
     }
-
 }

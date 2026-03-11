@@ -1,5 +1,6 @@
 package entity;
 
+import java.awt.Graphics2D; // TAMBAHAN: Perlu import ini untuk parameter draw
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
@@ -21,4 +22,9 @@ public class Entity {
     public Rectangle hitbox;
     public int hitboxDefaultX, hitboxDefaultY;
     public boolean collisionMade;
+
+    // TAMBAHAN: Method kosong agar bisa dipanggil lewat perulangan List di GamePanel
+    public void draw(Graphics2D g2) {
+        // Biarkan kosong. Ini akan di-override secara otomatis oleh Player / NPC.
+    }
 }

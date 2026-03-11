@@ -36,9 +36,8 @@ public class TileManager {
         setup(6, "missing", true);
         setup(7, "stonebrickfloor", false);
         setup(8, "stonebrickwall", true);
-        setup(9,"water1", true);
-        setup(10,"water2", true);
-
+        setup(9, "water1", true);
+        setup(10, "water2", true);
     }
 
     public void setup(int index, String imagePath, boolean collision) {
@@ -65,7 +64,6 @@ public class TileManager {
     public void loadMap(String resourcePath) {
 
         try {
-
             InputStream is = getClass().getResourceAsStream(resourcePath);
             if (is == null) {
                 System.err.println("Map not found: " + resourcePath);
@@ -110,10 +108,10 @@ public class TileManager {
             int screenX = worldX - gp.player.worldX + gp.player.screenX;
             int screenY = worldY - gp.player.worldY + gp.player.screenY;
 
-            if (worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
-                worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
-                worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
-                worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) {
+            if (screenX + gp.tileSize > 0 &&
+                screenX < gp.screenWidth &&
+                screenY + gp.tileSize > 0 &&
+                screenY < gp.screenHeight) {
 
                 if (tile[tileNum] != null) {
                     g2.drawImage(tile[tileNum].image, screenX, screenY, null);
