@@ -45,13 +45,16 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_E) {
             interactPressed = true;
         }
+        
         if (code == KeyEvent.VK_ESCAPE) {
             if (gp.gameState == gp.worldState) {
                 gp.gameState = gp.menuState;
+                gp.delta = 0;
             } else if (gp.gameState == gp.menuState) {
                 gp.gameState = gp.worldState;
+                gp.delta = 0;
             }
-        }
+}
 
         // Debug
         if (code == KeyEvent.VK_BACK_QUOTE) {

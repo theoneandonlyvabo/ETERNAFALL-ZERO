@@ -6,7 +6,7 @@
 
 ![Progress](https://progress-bar.xyz/32/?width=750&height=28)
 
-**Version 0.2.4**
+**Version 0.2.5**
 
 *A top-down RPG where turn-based combat has a real-time parry, exploration never locks you out, and the world's lore earns its weight.*
 

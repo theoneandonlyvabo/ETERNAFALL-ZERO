@@ -1,21 +1,22 @@
 package main;
 
-import entity.Entity; // TAMBAHAN IMPORT
+import entity.Entity;
 import entity.Player;
 import java.awt.AlphaComposite;
+import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.Font;
 import java.awt.Graphics2D;
-import java.util.ArrayList; // TAMBAHAN IMPORT
-import java.util.Collections; // TAMBAHAN IMPORT
-import java.util.Comparator; // TAMBAHAN IMPORT
-import javax.swing.JPanel;
+import java.awt.image.BufferStrategy;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import object.ObjectManager;
 import object.ObjectSetter;
 import world.TileManager;
 
-public class GamePanel extends JPanel implements Runnable {
+public class GamePanel extends Canvas implements Runnable {
     
     // SCREEN SETTINGS
     final int originalTileSize = 16;
@@ -60,14 +61,19 @@ public class GamePanel extends JPanel implements Runnable {
     // ENTITY AND OBJECT
     public Player player = new Player(this, keyH);
     public ObjectManager obj[] = new ObjectManager[10];
-    
-    // Y-SORTING LIST (Untuk mengantre render berdasarkan posisi Y)
+
+    // Y-SORTING LIST
     ArrayList<Object> entityList = new ArrayList<>();
+
+    // DEBUG
+    double delta = 0;
+    int currentFPS = 0;
+    long gameTimerSeconds = 0;
+    long gameTimerMs = 0;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
-        this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
     }
@@ -86,36 +92,50 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        double drawInterval = 1000000000 / FPS;
-        double delta = 0;
+        createBufferStrategy(3);
+        BufferStrategy bs = getBufferStrategy();
+
+        double drawInterval = 1000000000.0 / FPS;
         long lastTime = System.nanoTime();
         long currentTime;
         long timer = 0;
+                    long gameTimer = 0;
         int drawCount = 0;
 
         while (gameThread != null) {
             currentTime = System.nanoTime();
-            delta += (currentTime - lastTime) / drawInterval;
-            timer += (currentTime - lastTime);
+            long elapsed = currentTime - lastTime;
+            delta += elapsed / drawInterval;
+            timer += elapsed;
+            if (!fading) gameTimer += elapsed;
             lastTime = currentTime;
 
             if (delta >= 1) {
                 update();
-                repaint();
+                render(bs);
                 delta--;
                 drawCount++;
             }
 
             if (timer >= 1000000000) {
+                currentFPS = drawCount;
                 System.out.println("FPS: " + drawCount);
                 drawCount = 0;
                 timer = 0;
             }
+
+            if (gameTimer >= 1000000000) {
+                gameTimerSeconds++;
+                gameTimer -= 1000000000;
+            }
+            gameTimerMs = gameTimer / 1000000;
+
         }
     }
 
     public void update() {
-        if (gameState == worldState) {
+        
+        if (gameState == worldState && !fading) {
             player.update();
             interactionM.update();
         }
@@ -129,84 +149,102 @@ public class GamePanel extends JPanel implements Runnable {
             if (fadeAlpha <= 0) {
                 fadeAlpha = 0;
                 fading = false;
+                delta = 0; // reset delta pas fade selesai
             }
         }
     }
 
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
+    public void render(BufferStrategy bs) {
+        Graphics2D g2 = (Graphics2D) bs.getDrawGraphics();
+
+        // Clear
+        g2.setColor(Color.black);
+        g2.fillRect(0, 0, screenWidth, screenHeight);
 
         long drawStart = 0;
         if (keyH.checkDrawTime) {
             drawStart = System.nanoTime();
         }
 
-        // 1. Tile (Selalu di paling belakang)
+        // 1. Tile
         tileM.draw(g2);
 
-        // --- Y-SORTING IMPLEMENTATION ---
-
-        // Masukkan Player ke List
+        // 2. Y-Sorting
         entityList.add(player);
-
-        // Masukkan Object ke List
         for (int i = 0; i < obj.length; i++) {
-            if (obj[i] != null) {
-                entityList.add(obj[i]);
-            }
+            if (obj[i] != null) entityList.add(obj[i]);
         }
 
-        // Sort List berdasarkan worldY (Y terkecil di-draw duluan)
         Collections.sort(entityList, new Comparator<Object>() {
             @Override
             public int compare(Object o1, Object o2) {
-                int y1 = 0;
-                int y2 = 0;
-
+                int y1 = 0, y2 = 0;
                 if (o1 instanceof Entity) y1 = ((Entity) o1).worldY;
                 else if (o1 instanceof ObjectManager) y1 = ((ObjectManager) o1).worldY;
-
                 if (o2 instanceof Entity) y2 = ((Entity) o2).worldY;
                 else if (o2 instanceof ObjectManager) y2 = ((ObjectManager) o2).worldY;
-
                 return Integer.compare(y1, y2);
             }
         });
 
-        // Draw semua Entity & Object sesuai urutan
-        for (int i = 0; i < entityList.size(); i++) {
-            Object renderObj = entityList.get(i);
-            
-            if (renderObj instanceof Entity) {
-                ((Entity) renderObj).draw(g2); 
-            } else if (renderObj instanceof ObjectManager) {
-                ((ObjectManager) renderObj).draw(g2, this);
-            }
+        for (Object renderObj : entityList) {
+            if (renderObj instanceof Entity) ((Entity) renderObj).draw(g2);
+            else if (renderObj instanceof ObjectManager) ((ObjectManager) renderObj).draw(g2, this);
         }
-
-        // Kosongkan list supaya tidak bocor memori / ganda di frame selanjutnya
         entityList.clear();
 
-        // --- Y-SORTING END ---
-
-        // UI
+        // 3. UI
         ui.draw(g2);
 
-        // Interaction prompt
+        // 4. Interaction prompt
         interactionM.draw(g2);
 
-        // Debug
+        // 5. Debug HUD
         if (keyH.checkDrawTime) {
             long drawEnd = System.nanoTime();
             long passed = drawEnd - drawStart;
+
+            Font debugFont = new Font("Monospaced", Font.PLAIN, 20);
+            g2.setFont(debugFont);
+
+            int x = 30;
+            int lineH = 26;
+            int y = screenHeight / 2 - lineH;
+            int padX = 10;
+            int padY = 8;
+            int bgW = 300;
+            int bgH = lineH * 4 + padY * 2;
+
+            // Background
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+            g2.setColor(Color.black);
+            g2.fillRect(x - padX, y - lineH - padY + 6, bgW, bgH);
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+
+            // FPS
             g2.setColor(Color.white);
-            g2.drawString("Draw Time: " + passed, 100, 30);
-            System.out.println("Frame Time: " + passed);
+            g2.drawString("FPS        : " + currentFPS, x, y);
+
+            // Frame Time
+            y += lineH;
+            g2.setColor(Color.white);
+            g2.drawString("Frame Time : " + passed + " ns", x, y);
+
+            // Delta
+            y += lineH;
+            boolean spike = delta >= 1.4;
+            g2.setColor(spike ? Color.red : Color.green);
+            g2.drawString(String.format("Delta      : %.4f%s", delta, spike ? "  SPIKE" : ""), x, y);
+
+            // Game Timer
+            y += lineH;
+            long mins = gameTimerSeconds / 60;
+            long secs = gameTimerSeconds % 60;
+            g2.setColor(Color.white);
+            g2.drawString(String.format("Time       : %02d:%02d:%03d", mins, secs, gameTimerMs), x, y);
         }
 
-        // Screen Effects
+        // 6. Screen Effects
         if (fading) {
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fadeAlpha));
             g2.setColor(Color.black);
@@ -215,6 +253,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         g2.dispose();
+        bs.show();
     }
 
     public void playMusic(int i) {
