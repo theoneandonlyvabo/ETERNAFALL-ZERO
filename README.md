@@ -4,7 +4,7 @@
 
 **Game Development Progress**
 
-![Progress](https://progress-bar.xyz/36/?width=800&height=28)
+![Progress](https://progress-bar.xyz/36/?width=750&height=28)
 
 **Version 0.2.7 - Inventory System**
 
@@ -33,11 +33,9 @@ Eternafall is what that process produced. Every system designed from a real opin
 
 ## 🌍 What Remains of Witherfeld
 
-> Witherfeld is what remains after godhood stopped being rhetorical. The Crater didn't end anything — it redistributed. Power scattered into shards, and everything that breathes has been reaching for them ever since.
-> Three deities still stand. None of them should be trusted. They are not villains. They are conclusions.
+> Witherfeld is what remains after godhood stopped being rhetorical. The Crater didn't end anything — it redistributed. Power scattered into shards, and everything that breathes has been reaching for them ever since. Three deities still stand. None of them should be trusted. They are not villains. They are conclusions.
 >
-> The one who walks through all of it starts small. The world won't notice for a while.
-> But some things are already known about where this ends. *Humans, will be* — for as long as anything exists to witness it. You're reading this from outside. I'll speak plainly — I've had time to practice.
+> The one who walks through all of it starts small. The world won't notice for a while. Some things are already known about where this ends. *Humans, will be* — for as long as anything exists to witness it. You're reading this from outside. I'll speak plainly — I've had time to practice.
 >
 > Witherfeld is what remains after the question of godhood stopped being rhetorical. The world wasn't destroyed. It was *clarified*. The Crater didn't end anything — it redistributed. Power that once held shape scattered into shards, and everything that breathes in this world has been reaching for them ever since.
 >
