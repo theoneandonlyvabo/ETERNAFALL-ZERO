@@ -21,13 +21,10 @@
 
 ## 🌑 About
 
-It started somewhere else. A different game, a different vision — something bigger, something three-dimensional, something that demanded art pipelines and asset workflows and months of work before a single line of logic could breathe. The craft that mattered most, the code and the design, kept getting buried under everything else.
+Games have been the constant. Long before the code, before the design theory, before knowing what a game loop was — the love was already there.
+It took a while to get here. Information systems, OOP, graphic design, years of building the actual skillset. The first real attempt went sideways — a 3D soulslike that spent more time in asset pipelines than in logic. Wrong direction. Came back to what actually mattered: the systems, the design, the craft of making something that plays.
 
-So it came back to the beginning. To the games that built the instinct — the ones with routes that opened slowly, worlds that connected without explanation, systems that rewarded attention. Pokémon, played long before anyone thought to analyze it. Then the ones that came after: games with weight, with consequence, with combat that made passivity hurt.
-
-Java was never the plan. It was just the language that stuck — familiar enough from prior work, honest enough to build on. No engine. No framework. Just the standard library and the problem in front of it.
-
-Eternafall is what that process produced. Every system designed from a real opinion. Every mechanic kept because it earns its place.
+Pure Java. No engine. Every system written from scratch. Not a limitation — a choice. If it ships, every line of it was earned.
 
 ---
 
@@ -35,7 +32,7 @@ Eternafall is what that process produced. Every system designed from a real opin
 
 > Witherfeld is what remains after godhood stopped being rhetorical. The Crater didn't end anything — it redistributed. Power scattered into shards, and everything that breathes has been reaching for them ever since. Three deities still stand. One built an order on light that was never honest. One learned to speak in dragon blood and called it progress. One watched everything burn and decided that was pragmatism. They are not villains. They are conclusions.
 >
-> Hearthshore still smells like a beginning. Greymark is a wound three armies argue over. Solvarr Citadel holds its golden silence. Dreadcoast builds and pretends it isn't afraid. The one who walks through all of it starts small — the world won't notice for a while. But some things are already known about where this ends. *Humans, will be* — for as long as anything exists to witness it.
+> Hearthshore still smells like a beginning. Greymark is a wound three armies argue over. Solvarr Citadel holds its golden silence. Dreadcoast builds and pretends it isn't afraid. The one who walks through all of it starts small — the world won't notice for a while. Some things are already known about where this ends. Where it always ends. *Humans, will be* — for as long as anything exists to witness it. That much, at least, hasn't changed.
 
 ---
 
