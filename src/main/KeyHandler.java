@@ -9,6 +9,7 @@ public class KeyHandler implements KeyListener {
 
     public boolean upPressed, downPressed, leftPressed, rightPressed;
     public boolean interactPressed;
+    public boolean inventoryPressed;
     public FacingDirection lastDir = FacingDirection.DOWN;
 
     // Debug
@@ -17,7 +18,7 @@ public class KeyHandler implements KeyListener {
     public KeyHandler(GamePanel gp) {
         this.gp = gp;
     }
-    
+
     @Override
     public void keyTyped(KeyEvent e) {}
 
@@ -45,16 +46,23 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_E) {
             interactPressed = true;
         }
-        
+
         if (code == KeyEvent.VK_ESCAPE) {
-            if (gp.gameState == gp.worldState) {
-                gp.gameState = gp.menuState;
+            if (gp.gameState == GamePanel.worldState) {
+                gp.gameState = GamePanel.menuState;
                 gp.delta = 0;
-            } else if (gp.gameState == gp.menuState) {
-                gp.gameState = gp.worldState;
+            } else if (gp.gameState == GamePanel.menuState) {
+                gp.gameState = GamePanel.worldState;
                 gp.delta = 0;
             }
-}
+        }
+
+        // Inventory
+        if (code == KeyEvent.VK_TAB || code == KeyEvent.VK_I) {
+            if (gp.gameState == GamePanel.worldState) {
+                gp.itemManager.printInventory();
+            }
+        }
 
         // Debug
         if (code == KeyEvent.VK_BACK_QUOTE) {

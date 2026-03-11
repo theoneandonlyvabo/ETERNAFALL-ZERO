@@ -1,5 +1,6 @@
 package object;
 
+import item.Armament;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import main.GamePanel;
@@ -7,12 +8,21 @@ import main.GamePanel;
 public class OBJ_TestDummy extends ObjectManager {
 
     GamePanel gp;
+    Armament item = new Armament(
+
+        "Test Dummy", 
+        "Haha item go brrr", 
+        0, 
+        67, 
+        "longSword"
+        
+    );
 
     public OBJ_TestDummy(GamePanel gp) {
 
         this.gp = gp;
 
-        name = "TestDummy";
+        name = item.name;
         interactPrompt = "PICK UP";
 
         try {
@@ -28,11 +38,15 @@ public class OBJ_TestDummy extends ObjectManager {
 
     @Override
     public void interact() {
-        for (int i = 0; i < gp.obj.length; i++) {
-            if (gp.obj[i] == this) {
-                gp.obj[i] = null;
-                break;
+        gp.itemManager.lastPickedName = name;
+            if (gp.itemManager.addItem(item)) {
+            for (int i = 0; i < gp.obj.length; i++) {
+                if (gp.obj[i] == this) {
+                    gp.obj[i] = null;
+                    break;
+                }
             }
         }
     }
+
 }

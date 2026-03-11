@@ -15,6 +15,7 @@ import java.util.Comparator;
 import object.ObjectManager;
 import object.ObjectSetter;
 import world.TileManager;
+import item.ItemManager;
 
 public class GamePanel extends Canvas implements Runnable {
     
@@ -47,6 +48,7 @@ public class GamePanel extends Canvas implements Runnable {
     public CollisionChecker cChecker = new CollisionChecker(this);
     public ObjectSetter oSetter = new ObjectSetter(this);
     public InteractionManager interactionM = new InteractionManager(this);
+    public ItemManager itemManager = new ItemManager();
     Thread gameThread;
 
     // GAME STATE
@@ -115,11 +117,16 @@ public class GamePanel extends Canvas implements Runnable {
                 render(bs);
                 delta--;
                 drawCount++;
+            } else {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
 
             if (timer >= 1000000000) {
                 currentFPS = drawCount;
-                System.out.println("FPS: " + drawCount);
                 drawCount = 0;
                 timer = 0;
             }
@@ -138,6 +145,7 @@ public class GamePanel extends Canvas implements Runnable {
         if (gameState == worldState && !fading) {
             player.update();
             interactionM.update();
+            itemManager.update(1f / FPS);
         }
 
         if (gameState == menuState) {
@@ -212,7 +220,7 @@ public class GamePanel extends Canvas implements Runnable {
             int y = screenHeight / 2 - lineH;
             int padX = 10;
             int padY = 8;
-            int bgW = 300;
+            int bgW = 270;
             int bgH = lineH * 4 + padY * 2;
 
             // Background

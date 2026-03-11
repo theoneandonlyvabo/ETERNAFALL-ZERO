@@ -4,9 +4,9 @@
 
 **Game Development Progress**
 
-![Progress](https://progress-bar.xyz/32/?width=750&height=28)
+![Progress](https://progress-bar.xyz/36/?width=750&height=28)
 
-**Version 0.2.5**
+**Version 0.2.7 - Inventory System**
 
 *A top-down RPG where turn-based combat has a real-time parry, exploration never locks you out, and the world's lore earns its weight.*
 
