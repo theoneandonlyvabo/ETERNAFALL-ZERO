@@ -21,10 +21,9 @@
 
 ## 🌑 About
 
-Games have been the constant. Long before the code, before the design theory, before knowing what a game loop was — the love was already there.
-It took a while to get here. Information systems, OOP, graphic design, years of building the actual skillset. The first real attempt went sideways — a 3D soulslike that spent more time in asset pipelines than in logic. Wrong direction. Came back to what actually mattered: the systems, the design, the craft of making something that plays.
+Games have been the constant. Long before the code, before the design theory, before knowing what a game loop was — the love was already there. It took a while to get here. Information systems, OOP, graphic design, years of building the actual skillset. The first real attempt went sideways — a 3D soulslike that spent more time in asset pipelines than in logic. Wrong direction. Came back to what actually mattered: the systems, the design, the craft of making something that plays. Pure Java. No engine. Every system written from scratch. Not a limitation — a choice. If it ships, every line of it was earned.
 
-Pure Java. No engine. Every system written from scratch. Not a limitation — a choice. If it ships, every line of it was earned.
+This repo is the full development record — custom game loop, tile-based renderer, collision, interaction, inventory, and combat. Architecture decisions, system design, and every iteration documented as it happens.
 
 ---
 
