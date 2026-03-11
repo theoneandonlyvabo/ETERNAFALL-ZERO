@@ -4,7 +4,7 @@
 
 **Game Development Progress**
 
-![Progress](https://progress-bar.xyz/36/?width=750&height=28)
+![Progress](https://progress-bar.xyz/36/?width=800&height=28)
 
 **Version 0.2.7 - Inventory System**
 
