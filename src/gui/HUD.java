@@ -24,10 +24,10 @@ public class HUD {
     static final int promptIconH = 48;
     static final float promptFontSize = 32f;
     static final int promptIconTextGap = 2;
-    static final float promptTracking = -0.15f;
+    static final float promptTracking = 0f;
     static final int promptPaddingX = 30;
     static final int promptPaddingY = 30;
-    static final int iconOffsetY = 10;
+    static final int iconOffsetY = -40;
 
     GamePanel gp;
     BufferedImage playerBar;
@@ -41,7 +41,7 @@ public class HUD {
             playerBar = ImageIO.read(getClass().getResourceAsStream("/gui/HUD_playerbar.png"));
             buttonE   = ImageIO.read(getClass().getResourceAsStream("/gui/HUD_buttonE.png"));
 
-            InputStream fontIs = getClass().getResourceAsStream("/fonts/Eternafall8bit.ttf");
+            InputStream fontIs = getClass().getResourceAsStream("/fonts/upheaval.ttf");
             pixelFont = Font.createFont(Font.TRUETYPE_FONT, fontIs).deriveFont(promptFontSize);
         } catch (IOException | FontFormatException e) {
             e.printStackTrace();

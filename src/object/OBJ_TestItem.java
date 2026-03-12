@@ -1,32 +1,24 @@
 package object;
 
-import item.Armament;
+import item.Item;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import main.GamePanel;
 
-public class OBJ_TestDummy extends ObjectManager {
+public class OBJ_TestItem extends ObjectManager {
 
     GamePanel gp;
-    Armament item = new Armament(
+    public Item item;
 
-        "Test Dummy", 
-        "Haha item go brrr", 
-        0, 
-        67, 
-        "longSword"
-        
-    );
-
-    public OBJ_TestDummy(GamePanel gp) {
-
+    public OBJ_TestItem(GamePanel gp, Item item) {
         this.gp = gp;
+        this.item = item;
 
         name = item.name;
         interactPrompt = "PICK UP";
 
         try {
-            image = ImageIO.read(getClass().getResourceAsStream("/object/obj_testdummy.png"));
+            image = ImageIO.read(getClass().getResourceAsStream("/object/obj_testitem.png"));
             image = gTool.scaleImage(image, gp.tileSize, gp.tileSize);
         } catch (IOException e) {
             e.printStackTrace();
@@ -38,8 +30,8 @@ public class OBJ_TestDummy extends ObjectManager {
 
     @Override
     public void interact() {
-        gp.itemManager.lastPickedName = name;
-            if (gp.itemManager.addItem(item)) {
+        gp.itemManager.lastPickedName = item.name;
+        if (gp.itemManager.addItem(item)) {
             for (int i = 0; i < gp.obj.length; i++) {
                 if (gp.obj[i] == this) {
                     gp.obj[i] = null;
@@ -48,5 +40,4 @@ public class OBJ_TestDummy extends ObjectManager {
             }
         }
     }
-
 }

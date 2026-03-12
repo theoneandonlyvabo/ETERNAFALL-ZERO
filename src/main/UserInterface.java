@@ -19,12 +19,15 @@ public class UserInterface {
     public void draw(Graphics2D g2) {
 
         if (gp.gameState == GamePanel.worldState) {
+
             hud.draw(g2);
             hud.drawInteractPrompt(g2);
+            
         } else if (gp.gameState == GamePanel.menuState) {
             paused.draw(g2);
         } else if (gp.gameState == GamePanel.battleState) {
             // battle
         }
     }
+    
 }
