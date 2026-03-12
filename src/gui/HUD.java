@@ -19,7 +19,7 @@ import object.ObjectManager;
 
 public class HUD {
 
-    // Interact Prompt Settings (Sudah kembali pakai camelCase)
+    // Interact Prompt Settings
     static final int promptIconW = 48;
     static final int promptIconH = 48;
     static final float promptFontSize = 32f;
@@ -27,13 +27,10 @@ public class HUD {
     static final float promptTracking = -0.15f;
     static final int promptPaddingX = 30;
     static final int promptPaddingY = 30;
-    
-    // Tambahan variabel untuk mengakali ruang transparan di gambar PNG
-    static final int iconOffsetY = 10; // Tambah angkanya kalau icon masih kurang turun
+    static final int iconOffsetY = 10;
 
     GamePanel gp;
-    BufferedImage statsBar;
-    BufferedImage itemSlot;
+    BufferedImage playerBar;
     BufferedImage buttonE;
     Font pixelFont;
 
@@ -41,9 +38,8 @@ public class HUD {
         this.gp = gp;
 
         try {
-            statsBar = ImageIO.read(getClass().getResourceAsStream("/gui/HUD_stats_bar.png"));
-            itemSlot = ImageIO.read(getClass().getResourceAsStream("/gui/HUD_item_slot.png"));
-            buttonE  = ImageIO.read(getClass().getResourceAsStream("/gui/HUD_buttonE.png"));
+            playerBar = ImageIO.read(getClass().getResourceAsStream("/gui/HUD_playerbar.png"));
+            buttonE   = ImageIO.read(getClass().getResourceAsStream("/gui/HUD_buttonE.png"));
 
             InputStream fontIs = getClass().getResourceAsStream("/fonts/Eternafall8bit.ttf");
             pixelFont = Font.createFont(Font.TRUETYPE_FONT, fontIs).deriveFont(promptFontSize);
@@ -53,9 +49,7 @@ public class HUD {
     }
 
     public void draw(Graphics2D g2) {
-        g2.drawImage(statsBar, promptPaddingX, promptPaddingY, null);
-        
-        g2.drawImage(itemSlot, promptPaddingX, gp.getHeight() - itemSlot.getHeight() - promptPaddingY, null);
+        g2.drawImage(playerBar, 0, 0, null);
     }
 
     public void drawInteractPrompt(Graphics2D g2) {
@@ -79,21 +73,17 @@ public class HUD {
         FontMetrics fm = g2.getFontMetrics(trackedFont);
         int textHeight = fm.getAscent() - fm.getDescent();
 
-        int x = gp.getWidth() - promptPaddingX - promptIconW - promptIconTextGap - textWidth;
+        int x = gp.screenWidth - promptPaddingX - promptIconW - promptIconTextGap - textWidth;
         x = Math.max(promptPaddingX, x);
-        
-        int y = gp.getHeight() - promptPaddingY;
-        
-        // Di sini kita tambahkan iconOffsetY agar posisinya bisa turun menutupi area transparan
-        int iconY = y - promptIconH + iconOffsetY; 
+
+        int y = gp.screenHeight - promptPaddingY;
+        int iconY = y - promptIconH + iconOffsetY;
 
         g2.drawImage(buttonE, x, iconY, promptIconW, promptIconH, null);
 
-        // Posisi teks juga disesuaikan supaya tetap di tengah-tengah icon
         int textY = iconY + (promptIconH / 2) + (textHeight / 2);
 
         g2.setColor(Color.white);
         g2.drawString(label, x + promptIconW + promptIconTextGap, textY);
-        
     }
 }

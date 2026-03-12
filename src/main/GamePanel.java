@@ -2,6 +2,7 @@ package main;
 
 import entity.Entity;
 import entity.Player;
+import item.ItemManager;
 import java.awt.AlphaComposite;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -9,25 +10,26 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import object.ObjectManager;
 import object.ObjectSetter;
 import world.TileManager;
-import item.ItemManager;
+
 
 public class GamePanel extends Canvas implements Runnable {
     
     // SCREEN SETTINGS
     final int originalTileSize = 16;
-    public final int maxScreenCol = 20;
-    public final int maxScreenRow = 11;
+    public final int maxScreenCol = 19;
+    public final int maxScreenRow = 10;
     public final int scale = 5;
 
     public final int tileSize = originalTileSize * scale;
-    public final int screenWidth = tileSize * maxScreenCol;
-    public final int screenHeight = tileSize * maxScreenRow;
+    public final int screenWidth = 1536;
+    public final int screenHeight = 864;
 
     // SCREEN EFFECTS
     float fadeAlpha = 1f;
@@ -74,12 +76,10 @@ public class GamePanel extends Canvas implements Runnable {
     long gameTimerMs = 0;
 
     public GamePanel() {
-
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
         this.addKeyListener(keyH);
         this.setFocusable(true);
-        
     }
 
     public void loadMap() {
@@ -103,7 +103,7 @@ public class GamePanel extends Canvas implements Runnable {
         long lastTime = System.nanoTime();
         long currentTime;
         long timer = 0;
-                    long gameTimer = 0;
+        long gameTimer = 0;
         int drawCount = 0;
 
         while (gameThread != null) {
@@ -138,12 +138,10 @@ public class GamePanel extends Canvas implements Runnable {
                 gameTimer -= 1000000000;
             }
             gameTimerMs = gameTimer / 1000000;
-
         }
     }
 
     public void update() {
-        
         if (gameState == worldState && !fading) {
             player.update();
             interactionM.update();
@@ -159,12 +157,13 @@ public class GamePanel extends Canvas implements Runnable {
             if (fadeAlpha <= 0) {
                 fadeAlpha = 0;
                 fading = false;
-                delta = 0; // reset delta pas fade selesai
+                delta = 0;
             }
         }
     }
 
     public void render(BufferStrategy bs) {
+        
         Graphics2D g2 = (Graphics2D) bs.getDrawGraphics();
 
         // Clear
@@ -225,28 +224,22 @@ public class GamePanel extends Canvas implements Runnable {
             int bgW = 270;
             int bgH = lineH * 4 + padY * 2;
 
-            // Background
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
             g2.setColor(Color.black);
             g2.fillRect(x - padX, y - lineH - padY + 6, bgW, bgH);
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 
-            // FPS
             g2.setColor(Color.white);
             g2.drawString("FPS        : " + currentFPS, x, y);
 
-            // Frame Time
             y += lineH;
-            g2.setColor(Color.white);
             g2.drawString("Frame Time : " + passed + " ns", x, y);
 
-            // Delta
             y += lineH;
             boolean spike = delta >= 1.4;
             g2.setColor(spike ? Color.red : Color.green);
             g2.drawString(String.format("Delta      : %.4f%s", delta, spike ? "  SPIKE" : ""), x, y);
 
-            // Game Timer
             y += lineH;
             long mins = gameTimerSeconds / 60;
             long secs = gameTimerSeconds % 60;
@@ -264,6 +257,8 @@ public class GamePanel extends Canvas implements Runnable {
 
         g2.dispose();
         bs.show();
+
+        Toolkit.getDefaultToolkit().sync();
     }
 
     public void playMusic(int i) {
