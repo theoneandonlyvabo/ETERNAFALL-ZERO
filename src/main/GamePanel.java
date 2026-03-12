@@ -74,10 +74,12 @@ public class GamePanel extends Canvas implements Runnable {
     long gameTimerMs = 0;
 
     public GamePanel() {
+
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
         this.addKeyListener(keyH);
         this.setFocusable(true);
+        
     }
 
     public void loadMap() {
