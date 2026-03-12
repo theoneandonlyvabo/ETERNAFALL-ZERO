@@ -1,5 +1,6 @@
 package object;
 
+import item.Armament;
 import item.Item;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -10,9 +11,9 @@ public class OBJ_TestItem extends ObjectManager {
     GamePanel gp;
     public Item item;
 
-    public OBJ_TestItem(GamePanel gp, Item item) {
+    public OBJ_TestItem(GamePanel gp) {
         this.gp = gp;
-        this.item = item;
+        this.item = new Armament("Test Item", "Armament Test Item", Armament.ArmamentType.SWORD, 0, 999);
 
         name = item.name;
         interactPrompt = "PICK UP";
@@ -23,9 +24,10 @@ public class OBJ_TestItem extends ObjectManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        
         collision = false;
         interactRadius = 1.5f * gp.tileSize;
+        
     }
 
     @Override

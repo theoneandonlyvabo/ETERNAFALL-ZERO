@@ -2,11 +2,15 @@ package item;
 
 public class Armament extends Item {
 
+    public ArmamentType armamentType;
     public int damage;
-    public String armamentType; // "katana", "greatsword", etc.
 
-    public Armament(String name, String description, int levelReq, int damage, String armamentType) {
-        super(name, description, levelReq, ItemType.armament);
+    public enum ArmamentType {
+        AXE, DAGGER, KATANA, SPEAR, STAFF, SWORD
+    }
+
+    public Armament(String name, String description, ArmamentType armamentType, int levelReq, int damage) {
+        super(name, description, levelReq, ItemType.ARMAMENT);
         this.damage     = damage;
         this.armamentType = armamentType;
     }

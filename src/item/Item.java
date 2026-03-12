@@ -8,12 +8,7 @@ public abstract class Item {
     public ItemType type;
 
     public enum ItemType {
-        // Armor
-        head, chest, legs,
-        // Player gear
-        armament, relic, accessory,
-        // World
-        consumable, keyItem
+        ARMOR, ARMAMENT, RELIC, ACCESSORY, CONSUMABLE, KEY_ITEM
     }
 
     public Item(String name, String description, int levelReq, ItemType type) {
@@ -23,7 +18,6 @@ public abstract class Item {
         this.type        = type;
     }
 
-    // Cek apakah player cukup level untuk equip/use item ini
     public boolean meetsLevelReq(int playerLevel) {
         return playerLevel >= levelReq;
     }

@@ -50,6 +50,18 @@ public class HUD {
 
     public void draw(Graphics2D g2) {
         g2.drawImage(playerBar, 0, 0, null);
+        drawShards(g2);
+    }
+
+    private void drawShards(Graphics2D g2) {
+
+        if (pixelFont == null) return;
+
+        g2.setFont(pixelFont.deriveFont(45f));
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        g2.setColor(Color.decode("#3b6d62"));
+        g2.drawString(String.valueOf(gp.itemManager.witherShards), 1358, 857);
+
     }
 
     public void drawInteractPrompt(Graphics2D g2) {

@@ -6,7 +6,7 @@ public class Accessory extends Item {
     public float modifier;    // percentage, e.g. 0.15f = +15%
 
     public Accessory(String name, String description, int levelReq, String statTarget, float modifier) {
-        super(name, description, levelReq, ItemType.accessory);
+        super(name, description, levelReq, ItemType.ACCESSORY);
         this.statTarget = statTarget;
         this.modifier   = modifier;
     }
