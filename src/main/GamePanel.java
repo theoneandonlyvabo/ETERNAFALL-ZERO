@@ -230,7 +230,7 @@ public class GamePanel extends Canvas implements Runnable {
             int bgW = 285;
             int bgH = lineH * 4 + padY * 2;
 
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
             g2.setColor(Color.black);
             g2.fillRect(x - padX, y - lineH - padY + 6, bgW, bgH);
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
