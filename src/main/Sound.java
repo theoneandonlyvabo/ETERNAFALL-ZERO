@@ -13,14 +13,16 @@ public class Sound {
     float volumeURL[] = new float[30];
 
     public Sound() {
+
         soundURL[0]  = getClass().getResource("/sound/ambience_wind.wav");
         volumeURL[0] = 1.0f;
 
         soundURL[1]  = getClass().getResource("/sound/ambience_water.wav");
-        volumeURL[1] = 0.5f;
+        volumeURL[1] = 0.1f;
 
         soundURL[2]  = getClass().getResource("/sound/load_dungeon.wav");
         volumeURL[2] = 1.0f;
+
     }
 
     public void setFile(int i) {

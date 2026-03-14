@@ -84,8 +84,9 @@ public class GamePanel extends Canvas implements Runnable {
 
     public void loadMap() {
         oSetter.setObject();
-        playSFX(1);
+        playSFX(2);
         playMusic(0);
+        playMusic(1);
         gameState = worldState;
     }
 
