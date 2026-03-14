@@ -18,9 +18,8 @@ import object.ObjectManager;
 import object.ObjectSetter;
 import world.TileManager;
 
-
 public class GamePanel extends Canvas implements Runnable {
-    
+
     // SCREEN SETTINGS
     final int originalTileSize = 16;
     public final int maxScreenCol = 19;
@@ -45,7 +44,7 @@ public class GamePanel extends Canvas implements Runnable {
     // SYSTEM
     TileManager tileM = new TileManager(this);
     KeyHandler keyH = new KeyHandler(this);
-    Sound music = new Sound();
+    public Sound music = new Sound();
     Sound SFX = new Sound();
     public CollisionChecker cChecker = new CollisionChecker(this);
     public ObjectSetter oSetter = new ObjectSetter(this);
@@ -55,8 +54,8 @@ public class GamePanel extends Canvas implements Runnable {
 
     // GAME STATE
     public int gameState;
-    public static final int menuState = 0;
-    public static final int worldState = 1;
+    public static final int pausedState = 0;
+    public static final int worldState  = 1;
     public static final int battleState = 2;
 
     // UI
@@ -70,7 +69,7 @@ public class GamePanel extends Canvas implements Runnable {
     ArrayList<Object> entityList = new ArrayList<>();
 
     // DEBUG
-    double delta = 0;
+    public double delta = 0;
     int currentFPS = 0;
     long gameTimerSeconds = 0;
     long gameTimerMs = 0;
@@ -80,6 +79,7 @@ public class GamePanel extends Canvas implements Runnable {
         this.setBackground(Color.black);
         this.addKeyListener(keyH);
         this.setFocusable(true);
+        this.setFocusTraversalKeysEnabled(false); // biar TAB sampai ke KeyListener
     }
 
     public void loadMap() {
@@ -109,10 +109,14 @@ public class GamePanel extends Canvas implements Runnable {
         while (gameThread != null) {
             currentTime = System.nanoTime();
             long elapsed = currentTime - lastTime;
-            delta += elapsed / drawInterval;
-            timer += elapsed;
-            if (!fading) gameTimer += elapsed;
             lastTime = currentTime;
+
+            // Delta dan timer hanya akumulasi kalau bukan pausedState
+            if (gameState != pausedState) {
+                delta += elapsed / drawInterval;
+                timer += elapsed;
+                if (!fading) gameTimer += elapsed;
+            }
 
             if (delta >= 1) {
                 update();
@@ -120,6 +124,10 @@ public class GamePanel extends Canvas implements Runnable {
                 delta--;
                 drawCount++;
             } else {
+                // Kalau pausedState, tetap render tapi skip update
+                if (gameState == pausedState) {
+                    render(bs);
+                }
                 try {
                     Thread.sleep(1);
                 } catch (InterruptedException e) {
@@ -142,18 +150,15 @@ public class GamePanel extends Canvas implements Runnable {
     }
 
     public void update() {
-        if (gameState == worldState && !fading) {
+        // World logic skip kalau actionbar buka
+        if (gameState == worldState && !fading && !ui.actionBar.isOpen()) {
             player.update();
             interactionM.update();
             itemManager.update(1f / FPS);
         }
 
-        if (gameState == menuState) {
-            // Menu Update
-        }
-
         if (fading) {
-            fadeAlpha -= 1f / 120f;
+            fadeAlpha -= 1f / 60f;
             if (fadeAlpha <= 0) {
                 fadeAlpha = 0;
                 fading = false;
@@ -163,7 +168,7 @@ public class GamePanel extends Canvas implements Runnable {
     }
 
     public void render(BufferStrategy bs) {
-        
+
         Graphics2D g2 = (Graphics2D) bs.getDrawGraphics();
 
         // Clear
@@ -263,16 +268,16 @@ public class GamePanel extends Canvas implements Runnable {
 
     public void playMusic(int i) {
         music.setFile(i);
-        music.play();
-        music.loop();
+        music.play(i);
+        music.loop(i);
     }
 
     public void stopMusic() {
-        music.stop();
+        music.stopAll();
     }
 
     public void playSFX(int i) {
         SFX.setFile(i);
-        SFX.play();
+        SFX.play(i);
     }
 }

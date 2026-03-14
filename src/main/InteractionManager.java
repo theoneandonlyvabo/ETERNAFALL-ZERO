@@ -82,7 +82,7 @@ public class InteractionManager {
 
     public void draw(Graphics2D g2) {
         if (currentTarget == null || promptIcon == null) return;
-        if (gp.gameState == GamePanel.menuState) return;
+        if (gp.gameState == GamePanel.pausedState) return;
 
         int screenX = currentTarget.getWorldX() - gp.player.worldX + gp.player.screenX;
         int screenY = currentTarget.getWorldY() - gp.player.worldY + gp.player.screenY;

@@ -7,49 +7,72 @@ import javax.sound.sampled.Clip;
 
 public class Sound {
 
-    Clip clip;
+    Clip clips[] = new Clip[30];
     URL soundURL[] = new URL[30];
 
-    public Sound() {
+    float volumeURL[] = new float[30];
 
-        soundURL[0] = getClass().getResource("/sound/ambience_dungeon.wav");
-        soundURL[1] = getClass().getResource("/sound/load_dungeon.wav");
-        
+    public Sound() {
+        soundURL[0]  = getClass().getResource("/sound/ambience_wind.wav");
+        volumeURL[0] = 1.0f;
+
+        soundURL[1]  = getClass().getResource("/sound/ambience_water.wav");
+        volumeURL[1] = 0.5f;
+
+        soundURL[2]  = getClass().getResource("/sound/load_dungeon.wav");
+        volumeURL[2] = 1.0f;
     }
 
     public void setFile(int i) {
-
         try {
-
             AudioInputStream ais = AudioSystem.getAudioInputStream(soundURL[i]);
-            clip = AudioSystem.getClip();
-            clip.open(ais);
+            clips[i] = AudioSystem.getClip();
+            clips[i].open(ais);
+            setVolume(i, volumeURL[i]);
             System.out.println("Audio loaded: " + soundURL[i]);
-
         } catch (Exception e) {
-
             e.printStackTrace();
-            
         }
-
     }
 
-    public void play() {
+    public void play(int i)  { if (clips[i] != null) clips[i].start(); }
+    public void loop(int i)  { if (clips[i] != null) clips[i].loop(Clip.LOOP_CONTINUOUSLY); }
+    public void stop(int i)  { if (clips[i] != null) clips[i].stop(); }
 
-        clip.start();
-
+    public void pause(int i) {
+        if (clips[i] != null && clips[i].isRunning()) clips[i].stop();
     }
 
-    public void loop() {
-
-        clip.loop(Clip.LOOP_CONTINUOUSLY);
-
+    public void resume(int i) {
+        if (clips[i] != null && !clips[i].isRunning()) clips[i].start();
     }
 
-    public void stop() {
+    // volume: 0.0f (mute) sampai 1.0f (max)
+    static final float VOLUME_MIN = 0.0001f;
+    static final float VOLUME_MAX = 1.0f;
 
-        clip.stop();
-
+    public void setVolume(int i, float volume) {
+        if (clips[i] == null) return;
+        try {
+            javax.sound.sampled.FloatControl fc = (javax.sound.sampled.FloatControl)
+                clips[i].getControl(javax.sound.sampled.FloatControl.Type.MASTER_GAIN);
+            volume = Math.max(VOLUME_MIN, Math.min(volume, VOLUME_MAX));
+            float dB = (float) (Math.log10(volume) * 20);
+            fc.setValue(Math.max(fc.getMinimum(), Math.min(dB, fc.getMaximum())));
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
-    
+
+    public void stopAll() {
+        for (Clip c : clips) if (c != null && c.isRunning()) c.stop();
+    }
+
+    public void pauseAll() {
+        for (Clip c : clips) if (c != null && c.isRunning()) c.stop();
+    }
+
+    public void resumeAll() {
+        for (Clip c : clips) if (c != null && !c.isRunning()) c.start();
+    }
 }

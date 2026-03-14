@@ -6,7 +6,7 @@
 
 ![Progress](https://progress-bar.xyz/38/?width=750&height=28)
 
-**Version 0.2.10 - Inventory System**
+**Version 0.2.11 - Inventory System**
 
 *A top-down RPG where turn-based combat has a real-time parry, exploration never locks you out, and the world's lore earns its weight.*
 
@@ -92,7 +92,7 @@ Build variables interact with this loop:
 ## 🧠 Architecture
 
 - Custom fixed timestep game loop
-- Explicit state separation — `ExplorationState` · `CombatState` · `MenuState`
+- Explicit state separation — `ExplorationState` · `CombatState` · `pausedState`
 - Layered rendering pipeline
 - Modular OOP hierarchy
 
