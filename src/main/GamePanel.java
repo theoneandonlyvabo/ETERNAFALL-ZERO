@@ -9,8 +9,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.image.BufferStrategy;
 import java.awt.Toolkit;
+import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -79,7 +79,7 @@ public class GamePanel extends Canvas implements Runnable {
         this.setBackground(Color.black);
         this.addKeyListener(keyH);
         this.setFocusable(true);
-        this.setFocusTraversalKeysEnabled(false); // biar TAB sampai ke KeyListener
+        this.setFocusTraversalKeysEnabled(false);
     }
 
     public void loadMap() {
@@ -102,35 +102,35 @@ public class GamePanel extends Canvas implements Runnable {
 
         double drawInterval = 1000000000.0 / FPS;
         long lastTime = System.nanoTime();
-        long currentTime;
         long timer = 0;
         long gameTimer = 0;
         int drawCount = 0;
 
         while (gameThread != null) {
-            currentTime = System.nanoTime();
+            long currentTime = System.nanoTime();
             long elapsed = currentTime - lastTime;
             lastTime = currentTime;
 
-            // Delta dan timer hanya akumulasi kalau bukan pausedState
             if (gameState != pausedState) {
                 delta += elapsed / drawInterval;
                 timer += elapsed;
                 if (!fading) gameTimer += elapsed;
             }
 
-            if (delta >= 1) {
-                update();
+            // [FIX] pakai while bukan if — update sampai delta habis, render sekali
+            // dulu: if → delta cuma dikurangi 1 per iterasi, bisa numpuk terus
+            if (gameState != pausedState) {
+                while (delta >= 1) {
+                    update();
+                    delta--;
+                }
                 render(bs);
-                delta--;
                 drawCount++;
             } else {
-                // Kalau pausedState, tetap render tapi skip update
-                if (gameState == pausedState) {
-                    render(bs);
-                }
+                // pausedState: render sekali, skip update, lalu tidur
+                render(bs);
                 try {
-                    Thread.sleep(1);
+                    Thread.sleep(8);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -151,7 +151,6 @@ public class GamePanel extends Canvas implements Runnable {
     }
 
     public void update() {
-        // World logic skip kalau actionbar buka
         if (gameState == worldState && !fading && !ui.actionBar.isOpen()) {
             player.update();
             interactionM.update();
@@ -172,7 +171,6 @@ public class GamePanel extends Canvas implements Runnable {
 
         Graphics2D g2 = (Graphics2D) bs.getDrawGraphics();
 
-        // Clear
         g2.setColor(Color.black);
         g2.fillRect(0, 0, screenWidth, screenHeight);
 
@@ -185,6 +183,9 @@ public class GamePanel extends Canvas implements Runnable {
         tileM.draw(g2);
 
         // 2. Y-Sorting
+        // [FIX] entityList di-clear SEBELUM diisi, bukan sesudah
+        // dulu: clear() di akhir → kalau render dipanggil 2x, list numpuk
+        entityList.clear();
         entityList.add(player);
         for (int i = 0; i < obj.length; i++) {
             if (obj[i] != null) entityList.add(obj[i]);
@@ -206,7 +207,6 @@ public class GamePanel extends Canvas implements Runnable {
             if (renderObj instanceof Entity) ((Entity) renderObj).draw(g2);
             else if (renderObj instanceof ObjectManager) ((ObjectManager) renderObj).draw(g2, this);
         }
-        entityList.clear();
 
         // 3. UI
         ui.draw(g2);
@@ -224,10 +224,10 @@ public class GamePanel extends Canvas implements Runnable {
 
             int x = 30;
             int lineH = 26;
-            int y = screenHeight / 2 - lineH;
+            int y = 45;
             int padX = 10;
             int padY = 8;
-            int bgW = 270;
+            int bgW = 285;
             int bgH = lineH * 4 + padY * 2;
 
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
@@ -239,7 +239,7 @@ public class GamePanel extends Canvas implements Runnable {
             g2.drawString("FPS        : " + currentFPS, x, y);
 
             y += lineH;
-            g2.drawString("Frame Time : " + passed + " ns", x, y);
+            g2.drawString(String.format("Frame Time : %.2f ms", passed / 1_000_000.0), x, y);
 
             y += lineH;
             boolean spike = delta >= 1.4;

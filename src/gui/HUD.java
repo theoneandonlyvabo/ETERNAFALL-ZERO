@@ -24,50 +24,50 @@ public class HUD {
     // =========================================================
 
     // -- Shards --
-    static final float  SHARDS_FONT_SIZE    = 42f;
-    static final String SHARDS_COLOR        = "#3b6d62";
-    static final int    SHARDS_X            = 1358;
-    static final int    SHARDS_Y            = 855;
+    static final float  SHARDS_FONT_SIZE     = 42f;
+    static final String SHARDS_COLOR         = "#3b6d62";
+    static final int    SHARDS_X             = 1358;
+    static final int    SHARDS_Y             = 855;
 
     // -- HP --
-    static final float  HP_FONT_SIZE        = 42f;
-    static final String HP_COLOR            = "#e3ddd1";
-    static final int    HP_X                = 498;
-    static final int    HP_Y                = 830;
+    static final float  HP_FONT_SIZE         = 42f;
+    static final String HP_COLOR             = "#562923";
+    static final int    HP_X                 = 498;
+    static final int    HP_Y                 = 830;
 
     // -- HP Bar --
-    static final int    HP_BAR_X            = 253;
-    static final int    HP_BAR_Y            = 835;
-    static final int    HP_BAR_W            = 243;
-    static final int    HP_BAR_H            = 20;
-    static final String HP_BAR_FILL_COLOR   = "#562923";
+    static final int    HP_BAR_X             = 253;
+    static final int    HP_BAR_Y             = 835;
+    static final int    HP_BAR_W             = 244;
+    static final int    HP_BAR_H             = 20;
+    static final String HP_BAR_FILL_COLOR    = "#562923";
 
     // -- Level --
-    static final float  LEVEL_FONT_SIZE     = 42f;
-    static final String LEVEL_COLOR         = "#e3ddd1";
-    static final int    LEVEL_X             = 89;
-    static final int    LEVEL_Y             = 855;
+    static final float  LEVEL_FONT_SIZE      = 42f;
+    static final String LEVEL_COLOR          = "#e3ddd1";
+    static final int    LEVEL_X              = 88;
+    static final int    LEVEL_Y              = 855;
 
     // -- Armament --
-    static final float  ARMAMENT_FONT_SIZE  = 42f;
-    static final String ARMAMENT_COLOR      = "#e3ddd1";
-    static final int    ARMAMENT_X          = 585;    // center, adjust as needed
-    static final int    ARMAMENT_Y          = 830;
+    static final float  ARMAMENT_FONT_SIZE   = 42f;
+    static final String ARMAMENT_COLOR       = "#e3ddd1";
+    static final int    ARMAMENT_X           = 585;
+    static final int    ARMAMENT_Y           = 830;
 
     // -- Relic --
-    static final float  RELIC_FONT_SIZE     = 42f;
-    static final String RELIC_COLOR         = "#e3ddd1";
-    static final int    RELIC_X             = 585;    // center, adjust as needed
-    static final int    RELIC_Y             = 855;
+    static final float  RELIC_FONT_SIZE      = 42f;
+    static final String RELIC_COLOR          = "#e3ddd1";
+    static final int    RELIC_X              = 585;
+    static final int    RELIC_Y              = 855;
 
     // -- Interact Prompt --
-    static final float  PROMPT_FONT_SIZE    = 32f;
-    static final float  PROMPT_TRACKING     = 0f;
-    static final int    PROMPT_ICON_W       = 48;
-    static final int    PROMPT_ICON_H       = 48;
+    static final float  PROMPT_FONT_SIZE     = 42f;
+    static final float  PROMPT_TRACKING      = 0f;
+    static final int    PROMPT_ICON_W        = 48;
+    static final int    PROMPT_ICON_H        = 48;
     static final int    PROMPT_ICON_TEXT_GAP = 2;
-    static final int    PROMPT_PADDING_X    = 30;
-    static final int    PROMPT_PADDING_Y    = 30;
+    static final int    PROMPT_PADDING_X     = 30;
+    static final int    PROMPT_PADDING_Y     = 30;
     static final int    PROMPT_ICON_OFFSET_Y = -40;
 
     // =========================================================
@@ -75,7 +75,14 @@ public class HUD {
     GamePanel gp;
     BufferedImage playerBar;
     BufferedImage buttonE;
-    Font pixelFont;
+
+    // [FIX] font di-cache sekali di constructor, bukan derive tiap frame
+    Font fontShards;
+    Font fontHp;
+    Font fontLevel;
+    Font fontArmament;
+    Font fontRelic;
+    Font fontPrompt;
 
     public HUD(GamePanel gp) {
         this.gp = gp;
@@ -85,7 +92,15 @@ public class HUD {
             buttonE   = ImageIO.read(getClass().getResourceAsStream("/gui/HUD_buttonE.png"));
 
             InputStream fontIs = getClass().getResourceAsStream("/fonts/upheaval.ttf");
-            pixelFont = Font.createFont(Font.TRUETYPE_FONT, fontIs).deriveFont(PROMPT_FONT_SIZE);
+            Font base = Font.createFont(Font.TRUETYPE_FONT, fontIs);
+
+            fontShards   = base.deriveFont(SHARDS_FONT_SIZE);
+            fontHp       = base.deriveFont(HP_FONT_SIZE);
+            fontLevel    = base.deriveFont(LEVEL_FONT_SIZE);
+            fontArmament = base.deriveFont(ARMAMENT_FONT_SIZE);
+            fontRelic    = base.deriveFont(RELIC_FONT_SIZE);
+            fontPrompt   = base.deriveFont(PROMPT_FONT_SIZE);
+
         } catch (IOException | FontFormatException e) {
             e.printStackTrace();
         }
@@ -109,7 +124,6 @@ public class HUD {
         int max     = gp.player.getTotalMaxHp();
         int fillW   = (int)((double) current / max * HP_BAR_W);
 
-        // fill
         g2.setColor(Color.decode(HP_BAR_FILL_COLOR));
         g2.fillRect(HP_BAR_X, HP_BAR_Y, fillW, HP_BAR_H);
     }
@@ -118,10 +132,10 @@ public class HUD {
     // SHARDS
     // =========================================================
     private void drawShards(Graphics2D g2) {
-        if (pixelFont == null) return;
+        if (fontShards == null) return;
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-        g2.setFont(pixelFont.deriveFont(SHARDS_FONT_SIZE));
+        g2.setFont(fontShards);
         g2.setColor(Color.decode(SHARDS_COLOR));
         g2.drawString(String.valueOf(gp.itemManager.witherShards), SHARDS_X, SHARDS_Y);
     }
@@ -130,13 +144,13 @@ public class HUD {
     // HP
     // =========================================================
     private void drawHp(Graphics2D g2) {
-        if (pixelFont == null) return;
+        if (fontHp == null) return;
 
         int current = gp.player.currentHp;
         int max     = gp.player.getTotalMaxHp();
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-        g2.setFont(pixelFont.deriveFont(HP_FONT_SIZE));
+        g2.setFont(fontHp);
         g2.setColor(Color.decode(HP_COLOR));
         String hpText = current + "/" + max;
         FontMetrics fm = g2.getFontMetrics();
@@ -147,10 +161,10 @@ public class HUD {
     // LEVEL
     // =========================================================
     private void drawLevel(Graphics2D g2) {
-        if (pixelFont == null) return;
+        if (fontLevel == null) return;
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-        g2.setFont(pixelFont.deriveFont(LEVEL_FONT_SIZE));
+        g2.setFont(fontLevel);
         g2.setColor(Color.decode(LEVEL_COLOR));
         g2.drawString(String.valueOf(gp.player.level), LEVEL_X, LEVEL_Y);
     }
@@ -159,12 +173,12 @@ public class HUD {
     // ARMAMENT
     // =========================================================
     private void drawArmament(Graphics2D g2) {
-        if (pixelFont == null) return;
+        if (fontArmament == null) return;
 
         String text = gp.player.mainHand != null ? gp.player.mainHand.name : "NONE";
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-        g2.setFont(pixelFont.deriveFont(ARMAMENT_FONT_SIZE));
+        g2.setFont(fontArmament);
         g2.setColor(Color.decode(ARMAMENT_COLOR));
         g2.drawString(text, ARMAMENT_X, ARMAMENT_Y);
     }
@@ -173,12 +187,12 @@ public class HUD {
     // RELIC
     // =========================================================
     private void drawRelic(Graphics2D g2) {
-        if (pixelFont == null) return;
+        if (fontRelic == null) return;
 
         String text = gp.player.offHand != null ? gp.player.offHand.name : "NONE";
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-        g2.setFont(pixelFont.deriveFont(RELIC_FONT_SIZE));
+        g2.setFont(fontRelic);
         g2.setColor(Color.decode(RELIC_COLOR));
         g2.drawString(text, RELIC_X, RELIC_Y);
     }
@@ -190,17 +204,17 @@ public class HUD {
         if (gp.interactionM.currentTarget == null) return;
         if (!(gp.interactionM.currentTarget instanceof ObjectManager obj)) return;
         if (obj.interactPrompt == null || obj.interactPrompt.isEmpty()) return;
-        if (pixelFont == null || buttonE == null) return;
+        if (fontPrompt == null || buttonE == null) return;
 
         String label = obj.interactPrompt;
-        Font trackedFont = pixelFont.deriveFont(Map.of(TextAttribute.TRACKING, PROMPT_TRACKING));
+        Font trackedFont = fontPrompt.deriveFont(Map.of(TextAttribute.TRACKING, PROMPT_TRACKING));
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         g2.setFont(trackedFont);
 
-        FontRenderContext frc   = g2.getFontRenderContext();
-        TextLayout layout       = new TextLayout(label, trackedFont, frc);
-        int textWidth           = (int) layout.getAdvance();
+        FontRenderContext frc  = g2.getFontRenderContext();
+        TextLayout layout      = new TextLayout(label, trackedFont, frc);
+        int textWidth          = (int) layout.getAdvance();
 
         FontMetrics fm  = g2.getFontMetrics(trackedFont);
         int textHeight  = fm.getAscent() - fm.getDescent();
