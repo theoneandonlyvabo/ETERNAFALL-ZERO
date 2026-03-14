@@ -1,5 +1,9 @@
 package entity;
 
+import item.Accessory;
+import item.Armament;
+import item.Armor;
+import item.Relic;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -13,22 +17,53 @@ public class Player extends Entity {
 
     GamePanel gp;
     KeyHandler keyH;
-    
+
     public final int screenX;
     public final int screenY;
 
+    // =========================================================
+    // EDITABLE CONSTANTS (balance / testing)
+    // =========================================================
+    private static final int START_LEVEL  = 1;   // ganti buat testing
+    private static final int BASE_HP      = 10;
+    private static final int HP_PER_LEVEL = 10;
+    private static final int BASE_DAMAGE  = 2;   // flat, never scales
+    private static final int DEBUG_HP     = -1;  // override currentHp, -1 = pakai logika normal
+    // =========================================================
+
+    // -------------------------
+    // Stats
+    // -------------------------
+    public int level;
+    public int maxHp;
+    public int currentHp;
+    public final int baseDamage = BASE_DAMAGE;
+    public int witherShards;
+
+    // -------------------------
+    // Equipment Slots
+    // -------------------------
+    public Armor headpiece;
+    public Armor chestpiece;
+    public Armor legpiece;
+    public Armament mainHand;
+    public Relic offHand;
+    public Accessory accessory;
+
+    // -------------------------
+    // Character Identity
+    // -------------------------
+    public String currentPath;  // set via NPC trainer
+
     public Player(GamePanel gp, KeyHandler keyH) {
-        
+
         this.gp = gp;
         this.keyH = keyH;
 
         screenX = gp.screenWidth / 2 - gp.tileSize / 2;
         screenY = gp.screenHeight / 2 - gp.tileSize / 2;
 
-        // Player Hitbox Settings
-
         hitbox = new Rectangle();
-
         hitbox.x = 14 * gp.scale / 3;
         hitbox.y = 30 * gp.scale / 3;
         hitbox.width = 20 * gp.scale / 3;
@@ -48,27 +83,66 @@ public class Player extends Entity {
         speed = gp.scale;
         direction = "down";
 
+        level        = START_LEVEL;
+        maxHp        = BASE_HP + (HP_PER_LEVEL * (level - 1));
+        currentHp    = (DEBUG_HP >= 0) ? DEBUG_HP : maxHp;
+        witherShards = 0;
+
+        headpiece  = null;
+        chestpiece = null;
+        legpiece   = null;
+        mainHand   = null;
+        offHand    = null;
+        accessory  = null;
+
+        currentPath = null;
+    }
+
+    // -------------------------
+    // Computed Stats
+    // -------------------------
+    public int getTotalDamage() {
+        int flat     = baseDamage + (mainHand != null ? mainHand.getDamage() : 0);
+        float multi  = (accessory != null ? accessory.damageMultiplier : 1.0f);
+        return (int)(flat * multi);
+    }
+
+    public int getTotalMaxHp() {
+        int flat = maxHp
+            + (headpiece  != null ? headpiece.getHpBonus()  : 0)
+            + (chestpiece != null ? chestpiece.getHpBonus() : 0)
+            + (legpiece   != null ? legpiece.getHpBonus()   : 0);
+        float multi = (accessory != null ? accessory.hpMultiplier : 1.0f);
+        return (int)(flat * multi);
+    }
+
+    // -------------------------
+    // Level Up
+    // -------------------------
+    public void levelUp() {
+        level++;
+        maxHp    += HP_PER_LEVEL;
+        currentHp = getTotalMaxHp();  // full heal on level up (bisa lo ubah)
     }
 
     public void getPlayerImage() {
 
-        up1 = setup("efplayer_u_1");
-        up2 = setup("efplayer_u_2");
-        up3 = setup("efplayer_u_3");
-        up4 = setup("efplayer_u_4");
-        down1 = setup("efplayer_d_1");
-        down2 = setup("efplayer_d_2");
-        down3 = setup("efplayer_d_3");
-        down4 = setup("efplayer_d_4");
-        left1 = setup("efplayer_l_1");
-        left2 = setup("efplayer_l_2");
-        left3 = setup("efplayer_l_3");
-        left4 = setup("efplayer_l_4");
+        up1    = setup("efplayer_u_1");
+        up2    = setup("efplayer_u_2");
+        up3    = setup("efplayer_u_3");
+        up4    = setup("efplayer_u_4");
+        down1  = setup("efplayer_d_1");
+        down2  = setup("efplayer_d_2");
+        down3  = setup("efplayer_d_3");
+        down4  = setup("efplayer_d_4");
+        left1  = setup("efplayer_l_1");
+        left2  = setup("efplayer_l_2");
+        left3  = setup("efplayer_l_3");
+        left4  = setup("efplayer_l_4");
         right1 = setup("efplayer_r_1");
         right2 = setup("efplayer_r_2");
         right3 = setup("efplayer_r_3");
         right4 = setup("efplayer_r_4");
-
     }
 
     public BufferedImage setup(String imageName) {
@@ -77,27 +151,21 @@ public class Player extends Entity {
         BufferedImage image = null;
 
         try {
-
-            image = ImageIO.read(getClass().getResourceAsStream("/player/" + imageName + ".png")); 
+            image = ImageIO.read(getClass().getResourceAsStream("/player/" + imageName + ".png"));
             image = gTool.scaleImage(image, gp.tileSize, gp.tileSize);
-            
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return image;
-
     }
 
     public void update() {
 
-        if (keyH.upPressed == true || 
-            keyH.downPressed == true || 
-            keyH.leftPressed == true || 
-            keyH.rightPressed == true) {
+        if (keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed) {
 
             if (keyH.upPressed) {
-                direction = "up"; 
+                direction = "up";
             } else if (keyH.downPressed) {
                 direction = "down";
             } else if (keyH.leftPressed) {
@@ -106,62 +174,36 @@ public class Player extends Entity {
                 direction = "right";
             }
 
-            // Check Tile Collision
-
             collisionMade = false;
             gp.cChecker.checkTile(this);
 
-            // Check Object Collision
-
             int objIndex = gp.cChecker.checkObject(this, true);
-            
             interact(objIndex);
 
-            // If Collision is False, Player Can Move
-
-            if (collisionMade == false) {
-
-                switch(direction) {
-
-                    case "up" : worldY -= speed; break;
-                    case "down" : worldY += speed; break ;
-                    case "left" : worldX -= speed; break;
+            if (!collisionMade) {
+                switch (direction) {
+                    case "up"    : worldY -= speed; break;
+                    case "down"  : worldY += speed; break;
+                    case "left"  : worldX -= speed; break;
                     case "right" : worldX += speed; break;
-
                 }
-
             }
 
             spriteCounter++;
-
             if (spriteCounter > 7) {
-
-                if (spriteNum == 1) {
-                    spriteNum = 2;
-                } else if (spriteNum == 2) {
-                    spriteNum = 3;
-                } else if (spriteNum == 3) {
-                spriteNum = 4;
-                } else if (spriteNum == 4) {
-                spriteNum = 1;
-                }
-            spriteCounter = 0;
+                spriteNum = (spriteNum % 4) + 1;
+                spriteCounter = 0;
             }
 
         } else {
             spriteNum = 4;
         }
-
     }
 
     public void interact(int i) {
-
         if (i != 999) {
-
             String testDummy = gp.obj[i].name;
-
         }
-
     }
 
     public void draw(Graphics2D g2) {
@@ -169,61 +211,32 @@ public class Player extends Entity {
         BufferedImage image = null;
 
         switch (direction) {
-
             case "up":
-                if (spriteNum == 1) {
-                    image = up1;
-                } else if (spriteNum == 2) {
-                    image = up2;
-                } else if (spriteNum == 3) {
-                    image = up3;
-                } else if (spriteNum == 4) {
-                    image = up4;
-                }
+                if      (spriteNum == 1) image = up1;
+                else if (spriteNum == 2) image = up2;
+                else if (spriteNum == 3) image = up3;
+                else if (spriteNum == 4) image = up4;
                 break;
-
             case "down":
-                if (spriteNum == 1) {
-                    image = down1;
-                } else if (spriteNum == 2) {
-                    image = down2;
-                } else if (spriteNum == 3) {
-                    image = down3;
-                } else if (spriteNum == 4) {
-                    image = down4;
-                }
+                if      (spriteNum == 1) image = down1;
+                else if (spriteNum == 2) image = down2;
+                else if (spriteNum == 3) image = down3;
+                else if (spriteNum == 4) image = down4;
                 break;
-
             case "left":
-                if (spriteNum == 1) {
-                    image = left1;
-                } else if (spriteNum == 2) {
-                    image = left2;
-                } else if (spriteNum == 3) {
-                    image = left3;
-                } else if (spriteNum == 4) {
-                    image = left4;
-                }
+                if      (spriteNum == 1) image = left1;
+                else if (spriteNum == 2) image = left2;
+                else if (spriteNum == 3) image = left3;
+                else if (spriteNum == 4) image = left4;
                 break;
-
             case "right":
-                if (spriteNum == 1) {
-                    image = right1;
-                } else if (spriteNum == 2) {    
-                    image = right2;
-                } else if (spriteNum == 3) {
-                    image = right3;
-                } else if (spriteNum == 4) {
-                    image = right4;
-                }
+                if      (spriteNum == 1) image = right1;
+                else if (spriteNum == 2) image = right2;
+                else if (spriteNum == 3) image = right3;
+                else if (spriteNum == 4) image = right4;
                 break;
-
         }
 
         g2.drawImage(image, screenX, screenY, null);
-
-        // g2.setColor(Color.red);
-        // g2.drawRect(screenX + hitbox.x, screenY + hitbox.y, hitbox.width, hitbox.height);
-
     }
 }

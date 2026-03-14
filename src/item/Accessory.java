@@ -2,12 +2,12 @@ package item;
 
 public class Accessory extends Item {
 
-    public String statTarget; // "attack", "defense", "speed", etc.
-    public float modifier;    // percentage, e.g. 0.15f = +15%
+    public float hpMultiplier;      // 1.05f = +5%, 1.0f = no boost
+    public float damageMultiplier;  // same
 
-    public Accessory(String name, String description, int levelReq, String statTarget, float modifier) {
+    public Accessory(String name, String description, int levelReq, float hpMultiplier, float damageMultiplier) {
         super(name, description, levelReq, ItemType.ACCESSORY);
-        this.statTarget = statTarget;
-        this.modifier   = modifier;
+        this.hpMultiplier     = hpMultiplier;
+        this.damageMultiplier = damageMultiplier;
     }
 }

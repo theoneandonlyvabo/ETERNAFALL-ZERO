@@ -194,25 +194,6 @@ public class ItemManager {
 
         ItemManager inv = new ItemManager();
 
-        inv.addItem(new Armor("Iron Helmet", "Basic head protection.", Armor.ArmorType.HEAD, 1,  10));
-        inv.addItem(new Armor("Leather Chest", "Light torso armor.", Armor.ArmorType.CHEST, 1, 8));
-        inv.addItem(new Armament("Ashen Katana", "A blade from the Crater's edge.", Armament.ArmamentType.KATANA, 5, 15));
-        inv.addItem(new Relic("Wanderer's Totem", "Passively restores HP over time.", 3, "regenHp"));
-        inv.addItem(new Accessory("Shard Ring", "Boosts attack by 15%.", 2, "attack", 0.15f));
-
-        inv.addItem(new Consumable("Ember Flask", "Restores 50 HP.", "restoreHp"));
-        inv.addItem(new Consumable("Ember Flask", "Restores 50 HP.", "restoreHp"));
-        inv.addItem(new Consumable("Ember Flask", "Restores 50 HP.", "restoreHp"));
-        inv.addItem(new Consumable("Cinder Vial", "Restores 30 AP.", "restoreAp"));
-
-        inv.addItem(new KeyItem("Old Iron Key", "Opens a door in Hearthshore."));
-
-        inv.addShards(350);
-        inv.spendShards(100);
-
         inv.printInventory();
-
-        inv.useConsumable((Consumable) inv.worldItems[0], 5);
-        inv.useConsumable((Consumable) inv.worldItems[0], 5);
     }
 }
