@@ -91,7 +91,7 @@ public class HUD {
             playerBar = ImageIO.read(getClass().getResourceAsStream("/gui/HUD_playerbar.png"));
             buttonE   = ImageIO.read(getClass().getResourceAsStream("/gui/HUD_buttonE.png"));
 
-            InputStream fontIs = getClass().getResourceAsStream("/fonts/upheaval.ttf");
+            InputStream fontIs = getClass().getResourceAsStream("/fonts/determination.ttf");
             Font base = Font.createFont(Font.TRUETYPE_FONT, fontIs);
 
             fontShards   = base.deriveFont(SHARDS_FONT_SIZE);

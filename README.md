@@ -6,7 +6,7 @@
 
 ![Progress](https://progress-bar.xyz/42/?width=750&height=28)
 
-**Version 0.3.0 - NPC System**
+**Version 0.3.1 - NPC System**
 
 *A top-down RPG where turn-based combat has a real-time parry, exploration never locks you out, and the world's lore earns its weight.*
 

@@ -14,9 +14,10 @@ public class InteractionManager {
     public Interactable currentTarget;
 
     // CONFIG
-    private static final int ICON_W          = 48;
-    private static final int ICON_H          = 48;
-    private static final int PROMPT_Y_OFFSET = 6;
+    private static final int ICON_W          = 30;
+    private static final int ICON_H          = 30;
+    private static final int PROMPT_X_OFFSET = 0; // ubah sesuai kebutuhan
+    private static final int PROMPT_Y_OFFSET = 0;
     private static final int NPC_Y_EXTRA     = 10;
 
     public InteractionManager(GamePanel gp) {
@@ -108,7 +109,7 @@ public class InteractionManager {
         int screenY = currentTarget.getWorldY() - gp.player.worldY + gp.player.screenY;
 
         int extraY  = isNPC(currentTarget) ? NPC_Y_EXTRA : 0;
-        int promptX = screenX + (gp.tileSize / 2) - (ICON_W / 2);
+        int promptX = screenX + (gp.tileSize / 2) - (ICON_W / 2) + PROMPT_X_OFFSET;
         int promptY = screenY - ICON_H + PROMPT_Y_OFFSET - extraY;
 
         g2.drawImage(promptIcon, promptX, promptY, ICON_W, ICON_H, null);

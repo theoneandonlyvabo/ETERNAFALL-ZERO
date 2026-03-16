@@ -41,7 +41,7 @@ public class UI_Dialog {
         this.gp = gp;
 
         try {
-            InputStream is = getClass().getResourceAsStream("/fonts/upheaval.ttf");
+            InputStream is = getClass().getResourceAsStream("/fonts/determination.ttf");
             Font base  = Font.createFont(Font.TRUETYPE_FONT, is);
             nameFont   = base.deriveFont(Font.PLAIN, FONT_SIZE * 0.75f);
             dialogFont = base.deriveFont(Font.PLAIN, FONT_SIZE);
