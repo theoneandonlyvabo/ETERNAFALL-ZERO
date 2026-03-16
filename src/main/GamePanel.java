@@ -1,7 +1,9 @@
 package main;
 
+import dialog.DialogManager;
 import entity.Entity;
 import entity.Player;
+import gui.UI_Dialog;
 import item.ItemManager;
 import java.awt.AlphaComposite;
 import java.awt.Canvas;
@@ -15,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import object.ObjectManager;
-import object.ObjectSetter;
 import world.TileManager;
 
 public class GamePanel extends Canvas implements Runnable {
@@ -47,7 +48,7 @@ public class GamePanel extends Canvas implements Runnable {
     public Sound music = new Sound();
     Sound SFX = new Sound();
     public CollisionChecker cChecker = new CollisionChecker(this);
-    public ObjectSetter oSetter = new ObjectSetter(this);
+    public AssetSetter aSetter = new AssetSetter(this);
     public InteractionManager interactionM = new InteractionManager(this);
     public ItemManager itemManager = new ItemManager();
     Thread gameThread;
@@ -60,10 +61,13 @@ public class GamePanel extends Canvas implements Runnable {
 
     // UI
     public UserInterface ui = new UserInterface(this);
+    public DialogManager dialogManager = new DialogManager(this);
+    public UI_Dialog dialogUI = new UI_Dialog(this);
 
     // ENTITY AND OBJECT
     public Player player = new Player(this, keyH);
     public ObjectManager obj[] = new ObjectManager[10];
+    public Entity npc[] = new Entity[30];
 
     // Y-SORTING LIST
     ArrayList<Object> entityList = new ArrayList<>();
@@ -75,28 +79,36 @@ public class GamePanel extends Canvas implements Runnable {
     long gameTimerMs = 0;
 
     public GamePanel() {
+
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
         this.addKeyListener(keyH);
         this.setFocusable(true);
         this.setFocusTraversalKeysEnabled(false);
+
     }
 
-    public void loadMap() {
-        oSetter.setObject();
+    public void setupGame() {
+
+        aSetter.setObject();
+        aSetter.setNPC();
         playSFX(2);
         playMusic(0);
         playMusic(1);
         gameState = worldState;
+
     }
 
     public void startGameThread() {
+
         gameThread = new Thread(this);
         gameThread.start();
+
     }
 
     @Override
     public void run() {
+
         createBufferStrategy(3);
         BufferStrategy bs = getBufferStrategy();
 
@@ -107,6 +119,7 @@ public class GamePanel extends Canvas implements Runnable {
         int drawCount = 0;
 
         while (gameThread != null) {
+
             long currentTime = System.nanoTime();
             long elapsed = currentTime - lastTime;
             lastTime = currentTime;
@@ -117,8 +130,6 @@ public class GamePanel extends Canvas implements Runnable {
                 if (!fading) gameTimer += elapsed;
             }
 
-            // [FIX] pakai while bukan if — update sampai delta habis, render sekali
-            // dulu: if → delta cuma dikurangi 1 per iterasi, bisa numpuk terus
             if (gameState != pausedState) {
                 while (delta >= 1) {
                     update();
@@ -127,7 +138,6 @@ public class GamePanel extends Canvas implements Runnable {
                 render(bs);
                 drawCount++;
             } else {
-                // pausedState: render sekali, skip update, lalu tidur
                 render(bs);
                 try {
                     Thread.sleep(8);
@@ -147,14 +157,21 @@ public class GamePanel extends Canvas implements Runnable {
                 gameTimer -= 1000000000;
             }
             gameTimerMs = gameTimer / 1000000;
+
         }
     }
 
     public void update() {
-        if (gameState == worldState && !fading && !ui.actionBar.isOpen()) {
+
+        if (gameState == worldState && !fading && !ui.actionBar.isOpen()
+                && !dialogManager.isActive) {
             player.update();
             interactionM.update();
             itemManager.update(1f / FPS);
+        }
+
+        if (dialogManager.isActive) {
+            dialogUI.update();
         }
 
         if (fading) {
@@ -165,6 +182,7 @@ public class GamePanel extends Canvas implements Runnable {
                 delta = 0;
             }
         }
+
     }
 
     public void render(BufferStrategy bs) {
@@ -179,27 +197,31 @@ public class GamePanel extends Canvas implements Runnable {
             drawStart = System.nanoTime();
         }
 
-        // 1. Tile
+        // Tile
         tileM.draw(g2);
 
-        // 2. Y-Sorting
-        // [FIX] entityList di-clear SEBELUM diisi, bukan sesudah
-        // dulu: clear() di akhir → kalau render dipanggil 2x, list numpuk
+        // Y-Sorting
         entityList.clear();
         entityList.add(player);
         for (int i = 0; i < obj.length; i++) {
             if (obj[i] != null) entityList.add(obj[i]);
         }
+        for (int i = 0; i < npc.length; i++) {
+            if (npc[i] != null) entityList.add(npc[i]);
+        }
 
         Collections.sort(entityList, new Comparator<Object>() {
+
             @Override
             public int compare(Object o1, Object o2) {
+
                 int y1 = 0, y2 = 0;
                 if (o1 instanceof Entity) y1 = ((Entity) o1).worldY;
                 else if (o1 instanceof ObjectManager) y1 = ((ObjectManager) o1).worldY;
                 if (o2 instanceof Entity) y2 = ((Entity) o2).worldY;
                 else if (o2 instanceof ObjectManager) y2 = ((ObjectManager) o2).worldY;
                 return Integer.compare(y1, y2);
+
             }
         });
 
@@ -208,13 +230,16 @@ public class GamePanel extends Canvas implements Runnable {
             else if (renderObj instanceof ObjectManager) ((ObjectManager) renderObj).draw(g2, this);
         }
 
-        // 3. UI
+        // UI
         ui.draw(g2);
 
-        // 4. Interaction prompt
+        // Interaction prompt
         interactionM.draw(g2);
 
-        // 5. Debug HUD
+        // Dialog
+        dialogUI.draw(g2);
+
+        // Debug HUD
         if (keyH.checkDrawTime) {
             long drawEnd = System.nanoTime();
             long passed = drawEnd - drawStart;
@@ -253,7 +278,7 @@ public class GamePanel extends Canvas implements Runnable {
             g2.drawString(String.format("Time       : %02d:%02d:%03d", mins, secs, gameTimerMs), x, y);
         }
 
-        // 6. Screen Effects
+        // Screen Effects
         if (fading) {
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fadeAlpha));
             g2.setColor(Color.black);
@@ -268,17 +293,23 @@ public class GamePanel extends Canvas implements Runnable {
     }
 
     public void playMusic(int i) {
+
         music.setFile(i);
         music.play(i);
         music.loop(i);
+
     }
 
     public void stopMusic() {
+
         music.stopAll();
+
     }
 
     public void playSFX(int i) {
+
         SFX.setFile(i);
         SFX.play(i);
+
     }
 }

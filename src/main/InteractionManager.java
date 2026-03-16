@@ -13,6 +13,12 @@ public class InteractionManager {
     BufferedImage promptIcon;
     public Interactable currentTarget;
 
+    // CONFIG
+    private static final int ICON_W          = 48;
+    private static final int ICON_H          = 48;
+    private static final int PROMPT_Y_OFFSET = 6;
+    private static final int NPC_Y_EXTRA     = 10;
+
     public InteractionManager(GamePanel gp) {
         this.gp = gp;
 
@@ -25,18 +31,27 @@ public class InteractionManager {
 
     public void update() {
 
+        // Kalau dialog aktif, buang interactPressed dan skip
+        if (gp.dialogManager.isActive) {
+            gp.keyH.interactPressed = false;
+            return;
+        }
+
         List<Interactable> candidates = new ArrayList<>();
 
         for (int i = 0; i < gp.obj.length; i++) {
             if (gp.obj[i] instanceof Interactable target) {
                 float dist = getDistance(gp.player.worldX, gp.player.worldY, target.getWorldX(), target.getWorldY());
-                if (dist <= target.getInteractRadius()) {
-                    candidates.add(target);
-                }
+                if (dist <= target.getInteractRadius()) candidates.add(target);
             }
         }
 
-        // TODO: tambah NPC loop di sini nanti
+        for (int i = 0; i < gp.npc.length; i++) {
+            if (gp.npc[i] instanceof Interactable target) {
+                float dist = getDistance(gp.player.worldX, gp.player.worldY, target.getWorldX(), target.getWorldY());
+                if (dist <= target.getInteractRadius()) candidates.add(target);
+            }
+        }
 
         if (candidates.isEmpty()) {
             currentTarget = null;
@@ -80,17 +95,22 @@ public class InteractionManager {
         return (float) Math.sqrt(dx * dx + dy * dy);
     }
 
+    private boolean isNPC(Interactable target) {
+        return target instanceof entity.Entity;
+    }
+
     public void draw(Graphics2D g2) {
         if (currentTarget == null || promptIcon == null) return;
         if (gp.gameState == GamePanel.pausedState) return;
+        if (gp.dialogManager.isActive) return;
 
         int screenX = currentTarget.getWorldX() - gp.player.worldX + gp.player.screenX;
         int screenY = currentTarget.getWorldY() - gp.player.worldY + gp.player.screenY;
 
-        int iconW = 48, iconH = 48;
-        int promptX = screenX + (gp.tileSize / 2) - (iconW / 2);
-        int promptY = screenY - iconH + 8;
+        int extraY  = isNPC(currentTarget) ? NPC_Y_EXTRA : 0;
+        int promptX = screenX + (gp.tileSize / 2) - (ICON_W / 2);
+        int promptY = screenY - ICON_H + PROMPT_Y_OFFSET - extraY;
 
-        g2.drawImage(promptIcon, promptX, promptY, iconW, iconH, null);
+        g2.drawImage(promptIcon, promptX, promptY, ICON_W, ICON_H, null);
     }
 }

@@ -47,6 +47,19 @@ public class KeyHandler implements KeyListener {
 
         int code = e.getKeyCode();
 
+        // Dialog aktif — konsumsi E, block semua input lain
+        if (gp.dialogManager.isActive) {
+            if (code == KEY_INTERACT) {
+                gp.dialogUI.onAdvance();
+                interactPressed = false;
+            }
+            if (code == KEY_NAV || code == KEY_PAUSE) {
+                gp.dialogManager.forceClose();
+                interactPressed = false;
+            }
+            return;
+        }
+
         if (code == KEY_UP)       { upPressed = true;    lastDir = FacingDirection.UP;    }
         if (code == KEY_DOWN)     { downPressed = true;  lastDir = FacingDirection.DOWN;  }
         if (code == KEY_LEFT)     { leftPressed = true;  lastDir = FacingDirection.LEFT;  }
@@ -66,14 +79,13 @@ public class KeyHandler implements KeyListener {
         }
 
         if (code == KEY_NAV) {
-            if (!isMoving() && gp.gameState == GamePanel.worldState && gp.ui.actionBar.canToggleNav()) {
+            if (!isMoving() && gp.gameState == GamePanel.worldState && !gp.dialogManager.isActive && gp.ui.actionBar.canToggleNav()) {
                 Mode mode = gp.ui.actionBar.getMode();
                 if (mode == Mode.NONE) {
                     gp.ui.actionBar.setMode(Mode.NAV);
                 } else if (mode == Mode.NAV) {
                     gp.ui.actionBar.close();
                 } else {
-                    // panel aktif → TAB tutup panel, balik ke NAV
                     gp.ui.actionBar.setMode(Mode.NAV);
                 }
             }

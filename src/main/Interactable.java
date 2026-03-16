@@ -6,5 +6,6 @@ public interface Interactable {
     int getWorldX();
     int getWorldY();
     void interact();
+    String getPromptText();
 
 }

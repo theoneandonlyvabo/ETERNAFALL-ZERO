@@ -7,15 +7,11 @@ import item.Relic;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 import main.GamePanel;
-import main.GameTool;
 import main.KeyHandler;
 
 public class Player extends Entity {
 
-    GamePanel gp;
     KeyHandler keyH;
 
     public final int screenX;
@@ -57,7 +53,8 @@ public class Player extends Entity {
 
     public Player(GamePanel gp, KeyHandler keyH) {
 
-        this.gp = gp;
+        super(gp);
+
         this.keyH = keyH;
 
         screenX = gp.screenWidth / 2 - gp.tileSize / 2;
@@ -73,7 +70,7 @@ public class Player extends Entity {
         hitboxDefaultY = hitbox.y;
 
         setDefaultValues();
-        getPlayerImage();
+        getImage();
     }
 
     public void setDefaultValues() {
@@ -102,18 +99,22 @@ public class Player extends Entity {
     // Computed Stats
     // -------------------------
     public int getTotalDamage() {
+        
         int flat     = baseDamage + (mainHand != null ? mainHand.getDamage() : 0);
         float multi  = (accessory != null ? accessory.damageMultiplier : 1.0f);
         return (int)(flat * multi);
+
     }
 
     public int getTotalMaxHp() {
+
         int flat = maxHp
             + (headpiece  != null ? headpiece.getHpBonus()  : 0)
             + (chestpiece != null ? chestpiece.getHpBonus() : 0)
             + (legpiece   != null ? legpiece.getHpBonus()   : 0);
         float multi = (accessory != null ? accessory.hpMultiplier : 1.0f);
         return (int)(flat * multi);
+
     }
 
     // -------------------------
@@ -125,39 +126,24 @@ public class Player extends Entity {
         currentHp = getTotalMaxHp();  // full heal on level up (bisa lo ubah)
     }
 
-    public void getPlayerImage() {
+    public void getImage() {
 
-        up1    = setup("efplayer_u_1");
-        up2    = setup("efplayer_u_2");
-        up3    = setup("efplayer_u_3");
-        up4    = setup("efplayer_u_4");
-        down1  = setup("efplayer_d_1");
-        down2  = setup("efplayer_d_2");
-        down3  = setup("efplayer_d_3");
-        down4  = setup("efplayer_d_4");
-        left1  = setup("efplayer_l_1");
-        left2  = setup("efplayer_l_2");
-        left3  = setup("efplayer_l_3");
-        left4  = setup("efplayer_l_4");
-        right1 = setup("efplayer_r_1");
-        right2 = setup("efplayer_r_2");
-        right3 = setup("efplayer_r_3");
-        right4 = setup("efplayer_r_4");
-    }
-
-    public BufferedImage setup(String imageName) {
-
-        GameTool gTool = new GameTool();
-        BufferedImage image = null;
-
-        try {
-            image = ImageIO.read(getClass().getResourceAsStream("/player/" + imageName + ".png"));
-            image = gTool.scaleImage(image, gp.tileSize, gp.tileSize);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return image;
+        up1    = setup("/player/efplayer_u_1");
+        up2    = setup("/player/efplayer_u_2");
+        up3    = setup("/player/efplayer_u_3");
+        up4    = setup("/player/efplayer_u_4");
+        down1  = setup("/player/efplayer_d_1");
+        down2  = setup("/player/efplayer_d_2");
+        down3  = setup("/player/efplayer_d_3");
+        down4  = setup("/player/efplayer_d_4");
+        left1  = setup("/player/efplayer_l_1");
+        left2  = setup("/player/efplayer_l_2");
+        left3  = setup("/player/efplayer_l_3");
+        left4  = setup("/player/efplayer_l_4");
+        right1 = setup("/player/efplayer_r_1");
+        right2 = setup("/player/efplayer_r_2");
+        right3 = setup("/player/efplayer_r_3");
+        right4 = setup("/player/efplayer_r_4");
     }
 
     public void update() {
@@ -179,6 +165,9 @@ public class Player extends Entity {
 
             int objIndex = gp.cChecker.checkObject(this, true);
             interact(objIndex);
+
+            int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
+            interact(npcIndex);
 
             if (!collisionMade) {
                 switch (direction) {

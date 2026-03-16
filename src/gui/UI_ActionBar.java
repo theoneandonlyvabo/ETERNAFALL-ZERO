@@ -58,6 +58,7 @@ public class UI_ActionBar {
     // --- Draw ---
 
     public void draw(Graphics2D g2) {
+
         if (actionBarImg == null) return;
 
         g2.drawImage(actionBarImg, 0, 0, null);
@@ -71,6 +72,7 @@ public class UI_ActionBar {
             case SHOP      -> drawShopContext(g2);
             default        -> {}
         }
+
     }
 
     private void drawNav(Graphics2D g2) {
@@ -96,4 +98,5 @@ public class UI_ActionBar {
     private void drawShopContext(Graphics2D g2) {
         // TODO: render shop
     }
+    
 }

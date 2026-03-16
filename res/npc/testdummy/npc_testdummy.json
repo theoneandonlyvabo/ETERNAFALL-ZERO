@@ -1,0 +1,31 @@
+{
+    "id": "npc_testdummy",
+    "name": "Test Dummy",
+    "role": "default",
+    "dialog": [
+        {
+            "id": "initial",
+            "priority": 10,
+            "one_time": true,
+            "condition": null,
+            "lines": [
+                "...",
+                "You can see me?",
+                "Weird. Nobody usually stops here.",
+                "Thats one way to know I'm in developer-only mode..."
+            ],
+            "action": null
+        },
+        {
+            "id": "default",
+            "priority": 0,
+            "one_time": false,
+            "condition": null,
+            "lines": [
+                "...",
+                "What now?"
+            ],
+            "action": null
+        }
+    ]
+}

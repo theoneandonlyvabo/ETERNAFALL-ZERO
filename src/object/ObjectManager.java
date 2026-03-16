@@ -32,6 +32,7 @@ public class ObjectManager implements Interactable {
 
             g2.drawImage(image, screenX, screenY, null);
         }
+
     }
 
     @Override
@@ -44,5 +45,9 @@ public class ObjectManager implements Interactable {
     public int getWorldY() { return worldY; }
 
     @Override
+    public String getPromptText() { return interactPrompt; }
+
+    @Override
     public void interact() {}
+
 }

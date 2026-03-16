@@ -22,7 +22,7 @@ public class TileManager {
         mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
 
         getTileImage();
-        loadMap("/maps/testing.txt");
+        setupGame("/maps/testing.txt");
     }
 
     public void getTileImage() {
@@ -61,7 +61,7 @@ public class TileManager {
         }
     }
 
-    public void loadMap(String resourcePath) {
+    public void setupGame(String resourcePath) {
 
         try {
             InputStream is = getClass().getResourceAsStream(resourcePath);

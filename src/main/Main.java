@@ -33,7 +33,7 @@ public class Main {
         window.setSize(screen.width, screen.height);
         window.setVisible(true);
 
-        gamePanel.loadMap();
+        gamePanel.setupGame();
         gamePanel.startGameThread();
     }
 }
