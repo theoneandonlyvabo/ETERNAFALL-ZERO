@@ -9,10 +9,11 @@
             "one_time": true,
             "condition": null,
             "lines": [
-                "...",
-                "You can see me?",
-                "Weird. Nobody usually stops here.",
-                "Thats one way to know I'm in developer-only mode..."
+                "Mongrel intruder.",
+                "Thou'rt Tarnished, it seemeth.",
+                "Mother, wouldst Thou truly Lordship sanction, in one so bereft of light?",
+                "Yet... My purpose standeth unchanged.",
+                "Those stripped of the Grace of Gold shall all meet death.|In the embrace of Messmer's flame."
             ],
             "action": null
         },
@@ -23,7 +24,7 @@
             "condition": null,
             "lines": [
                 "...",
-                "What now?"
+                "O mother, forgive me."
             ],
             "action": null
         }

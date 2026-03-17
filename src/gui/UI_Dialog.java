@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.geom.RoundRectangle2D;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,27 +13,42 @@ import main.GamePanel;
 public class UI_Dialog {
 
     private final GamePanel gp;
-    private Font nameFont;
     private Font dialogFont;
 
     // CONFIG
     private static final float FONT_SIZE        = 32f;
-    private static final int   BOX_W            = 900;
-    private static final int   BOX_H            = 220;
-    private static final int   BOX_ARC          = 16;
-    private static final int   PAD_X            = 36;
-    private static final int   PAD_Y            = 28;
-    private static final int   TYPEWRITER_SPEED = 2;
+    private static final int   BOX_W            = 856;
+    private static final int   BOX_H            = 180;
+    private static final int   BORDER_THICKNESS = 8;
+    private static final int   PAD_X            = 25;
+    private static final int   PAD_Y            = 25;
+    private static final int   TEXT_INDENT      = 200;
+    private static final int   STAR_MARGIN      = 10;
+    private static final int   BOTTOM_OFFSET    = 80;
+    private static final int   MAX_LINES        = 3;
+    private static final int   LINE_SPACING     = 0;
+    private static final int   TYPEWRITER_SPEED = 3;
+    private static final int   PAUSE_COMMA      = 20;
+    private static final int   PAUSE_PERIOD     = 30;
+    private static final int   PAUSE_SEPARATOR  = 60;
+    private static final String LINE_SEPARATOR  = "|";
+
+    private static final Color COLOR_BG     = new Color(0x0a, 0x0a, 0x0a, 255);
+    private static final Color COLOR_BORDER = new Color(0x4f, 0x49, 0x3b, 255);
+    private static final Color COLOR_TEXT   = new Color(0xa2, 0x9f, 0x7e, 255);
 
     // State
     private String displayedText = "";
-    private int charIndex    = 0;
-    private int frameCounter = 0;
-    private boolean isDone   = false;
+    private int charIndex        = 0;
+    private int frameCounter     = 0;
+    private int pauseCounter     = 0;
+    private boolean isDone       = false;
 
-    // Wrapped lines cache
-    private List<String> wrappedTarget = new ArrayList<>();
-    private String lastTarget = null;
+    private String lastTarget    = null;
+
+    // Cached layout from full target — fixed so position never shifts
+    private int     cachedTotalLines = 1;
+    private int     cachedTextY      = 0;
 
     public UI_Dialog(GamePanel gp) {
 
@@ -43,11 +57,9 @@ public class UI_Dialog {
         try {
             InputStream is = getClass().getResourceAsStream("/fonts/determination.ttf");
             Font base  = Font.createFont(Font.TRUETYPE_FONT, is);
-            nameFont   = base.deriveFont(Font.PLAIN, FONT_SIZE * 0.75f);
             dialogFont = base.deriveFont(Font.PLAIN, FONT_SIZE);
         } catch (Exception e) {
-            nameFont   = new Font("Arial", Font.BOLD,  (int)(FONT_SIZE * 0.75f));
-            dialogFont = new Font("Arial", Font.PLAIN, (int) FONT_SIZE);
+            dialogFont = new Font("Monospaced", Font.PLAIN, (int) FONT_SIZE);
         }
 
     }
@@ -63,12 +75,20 @@ public class UI_Dialog {
         }
 
         if (!isDone) {
+            if (pauseCounter > 0) {
+                pauseCounter--;
+                return;
+            }
             frameCounter++;
             if (frameCounter >= TYPEWRITER_SPEED) {
                 frameCounter = 0;
                 if (charIndex < target.length()) {
                     charIndex++;
                     displayedText = target.substring(0, charIndex);
+                    char last = target.charAt(charIndex - 1);
+                    if (last == '.')      pauseCounter = PAUSE_PERIOD;
+                    else if (last == ',') pauseCounter = PAUSE_COMMA;
+                    else if (last == '|') pauseCounter = PAUSE_SEPARATOR;
                 } else {
                     isDone = true;
                 }
@@ -83,9 +103,20 @@ public class UI_Dialog {
         if (target == null) return;
 
         if (!isDone) {
-            displayedText = target;
-            charIndex     = target.length();
-            isDone        = true;
+            // Cari | berikutnya setelah charIndex
+            int nextSep = target.indexOf('|', charIndex);
+            if (nextSep != -1) {
+                // Skip ke tepat setelah |
+                charIndex     = nextSep + 1;
+                displayedText = target.substring(0, charIndex);
+                pauseCounter  = 0;
+                frameCounter  = 0;
+            } else {
+                // Nggak ada | lagi, skip ke akhir
+                displayedText = target;
+                charIndex     = target.length();
+                isDone        = true;
+            }
         } else {
             gp.dialogManager.advance();
             String next = gp.dialogManager.getCurrentLine();
@@ -98,72 +129,94 @@ public class UI_Dialog {
 
         if (!gp.dialogManager.isActive) return;
 
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
         int boxX = (gp.screenWidth  - BOX_W) / 2;
         int boxY = (gp.screenHeight - BOX_H) / 2;
 
         // Background
-        g2.setColor(new Color(0, 0, 0, 210));
-        g2.fill(new RoundRectangle2D.Float(boxX, boxY, BOX_W, BOX_H, BOX_ARC, BOX_ARC));
+        g2.setColor(COLOR_BG);
+        g2.fillRect(boxX, boxY, BOX_W, BOX_H);
 
         // Border
-        g2.setColor(new Color(255, 255, 255, 60));
-        g2.draw(new RoundRectangle2D.Float(boxX, boxY, BOX_W, BOX_H, BOX_ARC, BOX_ARC));
+        g2.setColor(COLOR_BORDER);
+        g2.setStroke(new java.awt.BasicStroke(BORDER_THICKNESS));
+        g2.drawRect(
+            boxX + BORDER_THICKNESS / 2,
+            boxY + BORDER_THICKNESS / 2,
+            BOX_W - BORDER_THICKNESS,
+            BOX_H - BORDER_THICKNESS
+        );
+        g2.setStroke(new java.awt.BasicStroke(1));
 
-        // Nama NPC
-        String npcName = gp.dialogManager.getCurrentNpcName();
-        String npcRole = gp.dialogManager.getCurrentNpcRole();
-        g2.setFont(nameFont);
-        FontMetrics nm = g2.getFontMetrics();
-        if (npcName != null) {
-            g2.setColor(new Color(200, 200, 200, 255));
-            g2.drawString(npcName, boxX + PAD_X, boxY + PAD_Y + nm.getAscent());
-        }
-        if (npcRole != null && shouldShowRole(npcRole)) {
-            g2.setFont(nameFont.deriveFont(FONT_SIZE * 0.5f));
-            FontMetrics rm = g2.getFontMetrics();
-            g2.setColor(new Color(160, 160, 160, 200));
-            g2.drawString(capitalize(npcRole), boxX + PAD_X, boxY + PAD_Y + nm.getAscent() + rm.getAscent() + 2);
-        }
-
-        // Wrap dan draw teks dialog
         g2.setFont(dialogFont);
         FontMetrics fm = g2.getFontMetrics();
 
-        int textX    = boxX + PAD_X;
-        int maxWidth = BOX_W - PAD_X * 2;
-        int lineH    = fm.getHeight();
-        int textY    = boxY + PAD_Y + (int)(FONT_SIZE * 0.75f) + 16 + fm.getAscent();
+        int textX    = boxX + TEXT_INDENT;
+        int starX    = textX - STAR_MARGIN - fm.stringWidth("*");
+        int maxWidth = BOX_W - TEXT_INDENT - PAD_X;
+        int lineH    = fm.getHeight() + LINE_SPACING;
 
-        List<String> lines = wrapText(displayedText, fm, maxWidth);
+        String target = gp.dialogManager.getCurrentLine();
+        if (target == null) return;
 
-        g2.setColor(Color.WHITE);
-        for (String line : lines) {
-            g2.drawString(line, textX, textY);
-            textY += lineH;
-        }
+        int textY = boxY + PAD_Y + fm.getAscent();
 
-        // Indikator E
-        if (isDone) {
-            g2.setFont(nameFont);
-            String hint = "E";
-            FontMetrics hm = g2.getFontMetrics();
-            int hx = boxX + BOX_W - hm.stringWidth(hint) - PAD_X;
-            int hy = boxY + BOX_H - PAD_Y;
-            g2.setColor(new Color(255, 255, 255, 160));
-            g2.drawString(hint, hx, hy);
+        List<RenderLine> displayLayout = buildLayout(displayedText, target, fm, maxWidth);
+
+        g2.setColor(COLOR_TEXT);
+        int drawn = 0;
+        for (RenderLine rl : displayLayout) {
+            if (drawn >= MAX_LINES) break;
+            if (rl.isStar) g2.drawString("", starX, textY + (drawn * lineH)); // Pointers
+            g2.drawString(rl.text, textX, textY + (drawn * lineH));
+            drawn++;
         }
 
     }
 
-    // Pecah teks jadi list of lines sesuai maxWidth
-    private List<String> wrapText(String text, FontMetrics fm, int maxWidth) {
+    private List<RenderLine> buildLayout(String displayText, String fullTarget, FontMetrics fm, int maxWidth) {
+
+        List<RenderLine> result = new ArrayList<>();
+        if (fullTarget == null || fullTarget.isEmpty()) return result;
+
+        String cleanDisplay = displayText.replaceAll("\\|$", "");
+        String[] fullSegs    = fullTarget.split("\\" + LINE_SEPARATOR, -1);
+        String[] displaySegs = cleanDisplay.split("\\" + LINE_SEPARATOR, -1);
+
+        for (int s = 0; s < displaySegs.length; s++) {
+            String fullSeg    = s < fullSegs.length ? fullSegs[s].trim() : "";
+            String displaySeg = displaySegs[s].trim();
+
+            // Wrap boundaries fixed from full segment
+            List<String> wrappedFull = wrapSegment(fullSeg, fm, maxWidth);
+
+            // Walk through wrapped lines, fill each with as many chars as fit
+            int cursor = 0;
+            for (int i = 0; i < wrappedFull.size(); i++) {
+                if (cursor >= displaySeg.length()) break;
+                int lineLen = wrappedFull.get(i).length();
+                int end     = Math.min(cursor + lineLen, displaySeg.length());
+                result.add(new RenderLine(displaySeg.substring(cursor, end), i == 0));
+                cursor += lineLen;
+                // Account for the space between words that wrapSegment consumed
+                if (cursor < displaySeg.length() && displaySeg.charAt(cursor) == ' ') cursor++;
+            }
+        }
+
+        return result;
+
+    }
+
+    private List<String> wrapSegment(String text, FontMetrics fm, int maxWidth) {
 
         List<String> lines = new ArrayList<>();
-        if (text == null || text.isEmpty()) return lines;
+        if (text.isEmpty()) {
+            lines.add("");
+            return lines;
+        }
 
-        String[] words  = text.split(" ");
+        String[] words = text.split(" ");
         StringBuilder sb = new StringBuilder();
 
         for (String word : words) {
@@ -181,19 +234,20 @@ public class UI_Dialog {
 
     }
 
-    private boolean shouldShowRole(String role) {
-        return !role.equals("default") && !role.equals("lore");
-    }
-
-    private String capitalize(String s) {
-        if (s == null || s.isEmpty()) return s;
-        return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+    private static class RenderLine {
+        String  text;
+        boolean isStar;
+        RenderLine(String text, boolean isStar) {
+            this.text   = text;
+            this.isStar = isStar;
+        }
     }
 
     private void reset() {
         displayedText = "";
         charIndex     = 0;
         frameCounter  = 0;
+        pauseCounter  = 0;
         isDone        = false;
     }
 
