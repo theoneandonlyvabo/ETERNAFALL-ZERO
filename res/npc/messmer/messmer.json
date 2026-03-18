@@ -1,0 +1,32 @@
+{
+    "id": "npc_messmer",
+    "name": "Messmer the Impaler",
+    "role": "battle",
+    "dialog": [
+        {
+            "id": "initial",
+            "priority": 10,
+            "one_time": true,
+            "condition": null,
+            "lines": [
+                "Mongrel intruder.",
+                "Thou'rt Tarnished, it seemeth.",
+                "Mother, wouldst Thou truly Lordship sanction, in one so bereft of light?",
+                "Yet... My purpose standeth unchanged.",
+                "Those stripped of the Grace of Gold shall all meet death.|In the embrace of Messmer's flame."
+            ],
+            "action": { "type": "start_battle", "target": "messmer" }
+        },
+        {
+            "id": "default",
+            "priority": 0,
+            "one_time": false,
+            "condition": null,
+            "lines": [
+                "...",
+                "O Mother, forgive Me."
+            ],
+            "action": { "type": "start_battle", "target": "messmer" }
+        }
+    ]
+}

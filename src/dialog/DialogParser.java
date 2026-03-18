@@ -42,7 +42,6 @@ public class DialogParser {
 
     }
 
-    // Ambil value string dari key JSON flat (tidak nested)
     private String extractString(String json, String key) {
 
         String search = "\"" + key + "\"";
@@ -66,8 +65,7 @@ public class DialogParser {
 
         List<DialogEntry> entries = new ArrayList<>();
 
-        // Isolasi array "dialog": [ ... ]
-        int arrayStart = json.indexOf("\"dialog\"");
+        int arrayStart   = json.indexOf("\"dialog\"");
         if (arrayStart == -1) return entries;
 
         int bracketOpen  = json.indexOf("[", arrayStart);
@@ -76,9 +74,7 @@ public class DialogParser {
 
         String arrayContent = json.substring(bracketOpen + 1, bracketClose);
 
-        // Pecah tiap object { ... } dalam array
-        List<String> blocks = splitObjects(arrayContent);
-        for (String block : blocks) {
+        for (String block : splitObjects(arrayContent)) {
             DialogEntry entry = parseEntry(block);
             if (entry != null) entries.add(entry);
         }
@@ -89,17 +85,44 @@ public class DialogParser {
 
     private DialogEntry parseEntry(String block) {
 
-        DialogEntry entry = new DialogEntry();
-
-        entry.id       = extractString(block, "id");
-        entry.priority = extractInt(block, "priority");
-        entry.oneTime  = extractBoolean(block, "one_time");
-        entry.lines    = extractStringArray(block, "lines");
-        entry.condition = extractStringMap(block, "condition");
-        entry.action    = extractStringMap(block, "action");
+        DialogEntry entry  = new DialogEntry();
+        entry.id           = extractString(block, "id");
+        entry.priority     = extractInt(block, "priority");
+        entry.oneTime      = extractBoolean(block, "one_time");
+        entry.lines        = extractStringArray(block, "lines");
+        entry.condition    = extractStringMap(block, "condition");
+        entry.action       = extractAction(block);
 
         if (entry.id == null) return null;
         return entry;
+
+    }
+
+    // Parse "action": { "type": "...", "target": "..." } atau null
+    private DialogEntry.DialogAction extractAction(String json) {
+
+        String search = "\"action\"";
+        int idx = json.indexOf(search);
+        if (idx == -1) return null;
+
+        int colon = json.indexOf(":", idx);
+        if (colon == -1) return null;
+
+        String after = json.substring(colon + 1).trim();
+        if (after.startsWith("null")) return null;
+
+        int braceOpen  = json.indexOf("{", colon);
+        int braceClose = findMatchingBracket(json, braceOpen, '{', '}');
+        if (braceOpen == -1 || braceClose == -1) return null;
+
+        String content = json.substring(braceOpen, braceClose + 1);
+
+        DialogEntry.DialogAction action = new DialogEntry.DialogAction();
+        action.type   = extractString(content, "type");
+        action.target = extractString(content, "target");
+
+        if (action.type == null) return null;
+        return action;
 
     }
 
@@ -135,8 +158,7 @@ public class DialogParser {
         int colon = json.indexOf(":", idx);
         if (colon == -1) return false;
 
-        String after = json.substring(colon + 1).trim();
-        return after.startsWith("true");
+        return json.substring(colon + 1).trim().startsWith("true");
 
     }
 
@@ -144,8 +166,8 @@ public class DialogParser {
 
         List<String> result = new ArrayList<>();
 
-        String search = "\"" + key + "\"";
-        int idx = json.indexOf(search);
+        String search    = "\"" + key + "\"";
+        int idx          = json.indexOf(search);
         if (idx == -1) return result;
 
         int bracketOpen  = json.indexOf("[", idx);
@@ -154,7 +176,6 @@ public class DialogParser {
 
         String content = json.substring(bracketOpen + 1, bracketClose);
 
-        // Parse tiap string dalam array
         int pos = 0;
         while (pos < content.length()) {
             int q1 = content.indexOf("\"", pos);
@@ -169,7 +190,6 @@ public class DialogParser {
 
     }
 
-    // Parse object { "key": "value", ... } atau return null kalau "null"
     private Map<String, String> extractStringMap(String json, String key) {
 
         String search = "\"" + key + "\"";
@@ -190,7 +210,6 @@ public class DialogParser {
         Map<String, String> map = new HashMap<>();
 
         int pos = 0;
-        
         while (pos < content.length()) {
             int k1 = content.indexOf("\"", pos);
             if (k1 == -1) break;
@@ -198,16 +217,15 @@ public class DialogParser {
             if (k2 == -1) break;
             String mapKey = content.substring(k1 + 1, k2);
 
-            int c = content.indexOf(":", k2);
+            int c  = content.indexOf(":", k2);
             if (c == -1) break;
 
             int v1 = content.indexOf("\"", c + 1);
             if (v1 == -1) break;
             int v2 = content.indexOf("\"", v1 + 1);
             if (v2 == -1) break;
-            String mapVal = content.substring(v1 + 1, v2);
 
-            map.put(mapKey, mapVal);
+            map.put(mapKey, content.substring(v1 + 1, v2));
             pos = v2 + 1;
         }
 
@@ -215,7 +233,6 @@ public class DialogParser {
 
     }
 
-    // Cari posisi closing bracket yang matching
     private int findMatchingBracket(String json, int openPos, char open, char close) {
 
         if (openPos == -1 || openPos >= json.length()) return -1;
@@ -232,7 +249,6 @@ public class DialogParser {
 
     }
 
-    // Pecah string JSON array jadi list of object strings { ... }
     private List<String> splitObjects(String content) {
 
         List<String> result = new ArrayList<>();

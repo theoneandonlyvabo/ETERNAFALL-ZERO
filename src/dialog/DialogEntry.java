@@ -5,11 +5,16 @@ import java.util.Map;
 
 public class DialogEntry {
 
-    public String id;
-    public int priority;
-    public boolean oneTime;
-    public Map<String, String> condition; // key: "path" / "seen", value: expected value
-    public List<String> lines;
-    public Map<String, String> action;   // key: "setPath" / "markSeen", value: target
+    public String             id;
+    public int                priority;
+    public boolean            oneTime;
+    public Map<String,String> condition;
+    public List<String>       lines;
+    public DialogAction       action;
+
+    public static class DialogAction {
+        public String type;   // "start_battle" | "setPath" | "markSeen"
+        public String target; // enemy id | path name | dialog id
+    }
 
 }

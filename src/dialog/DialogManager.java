@@ -1,5 +1,6 @@
 package dialog;
 
+import entity.Messmer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,14 +13,14 @@ public class DialogManager {
     private final GamePanel gp;
     private final DialogParser parser = new DialogParser();
 
-    private final Map<String, NpcDialogData> cache = new HashMap<>();
-    private final Set<String> seenFlags = new HashSet<>();
+    private final Map<String, NpcDialogData> cache     = new HashMap<>();
+    private final Set<String>                seenFlags = new HashSet<>();
 
-    public boolean isActive = false;
+    public boolean     isActive     = false;
     private List<String> currentLines;
-    private int lineIndex = 0;
-    private String pendingNpcId = null;
-    private DialogEntry pendingEntry = null;
+    private int          lineIndex    = 0;
+    private String       pendingNpcId = null;
+    private DialogEntry  pendingEntry = null;
 
     public DialogManager(GamePanel gp) {
         this.gp = gp;
@@ -27,17 +28,11 @@ public class DialogManager {
 
     public void startDialog(String npcId) {
 
-        System.out.println("startDialog called: " + npcId);
-
         NpcDialogData data = loadNpc(npcId);
-        System.out.println("data: " + data);
         if (data == null) return;
 
         DialogEntry entry = resolveEntry(data.dialog);
-        System.out.println("entry: " + entry);
         if (entry == null || entry.lines == null || entry.lines.isEmpty()) return;
-
-        System.out.println("lines: " + entry.lines);
 
         currentLines = entry.lines;
         lineIndex    = 0;
@@ -50,12 +45,8 @@ public class DialogManager {
     public void advance() {
 
         if (!isActive) return;
-
         lineIndex++;
-
-        if (lineIndex >= currentLines.size()) {
-            finishDialog();
-        }
+        if (lineIndex >= currentLines.size()) finishDialog();
 
     }
 
@@ -71,7 +62,7 @@ public class DialogManager {
 
         if (pendingEntry != null) {
             if (pendingEntry.oneTime) seenFlags.add(pendingEntry.id);
-            if (pendingEntry.action != null) executeAction(pendingEntry.action);
+            if (pendingEntry.action  != null) executeAction(pendingEntry.action);
         }
 
         isActive     = false;
@@ -82,10 +73,22 @@ public class DialogManager {
 
     }
 
-    private void executeAction(Map<String, String> action) {
+    private void executeAction(DialogEntry.DialogAction action) {
 
-        if (action.containsKey("setPath"))  gp.player.currentPath = action.get("setPath");
-        if (action.containsKey("markSeen")) seenFlags.add(action.get("markSeen"));
+        switch (action.type) {
+            case "setPath"     -> gp.player.currentPath = action.target;
+            case "markSeen"    -> seenFlags.add(action.target);
+            case "start_battle" -> startBattle(action.target);
+        }
+
+    }
+
+    private void startBattle(String target) {
+
+        switch (target) {
+            case "messmer" -> gp.battleManager.startBattle(Messmer.DATA);
+            // tambah enemy baru di sini
+        }
 
     }
 
@@ -109,8 +112,8 @@ public class DialogManager {
 
         for (Map.Entry<String, String> c : condition.entrySet()) {
             switch (c.getKey()) {
-                case "path": if (!c.getValue().equals(gp.player.currentPath)) return false; break;
-                case "seen": if (!seenFlags.contains(c.getValue())) return false; break;
+                case "path" -> { if (!c.getValue().equals(gp.player.currentPath)) return false; }
+                case "seen" -> { if (!seenFlags.contains(c.getValue())) return false; }
             }
         }
 
@@ -123,7 +126,7 @@ public class DialogManager {
         if (cache.containsKey(npcId)) return cache.get(npcId);
 
         String folder = npcId.replace("npc_", "");
-NpcDialogData data = parser.parse("/npc/" + folder + "/" + npcId + ".json");
+        NpcDialogData data = parser.parse("/npc/" + folder + "/" + npcId + ".json");
         if (data != null) cache.put(npcId, data);
         return data;
 

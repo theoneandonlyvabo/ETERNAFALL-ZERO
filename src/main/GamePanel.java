@@ -1,5 +1,6 @@
 package main;
 
+import battle.BattleManager;
 import dialog.DialogManager;
 import entity.Entity;
 import entity.Player;
@@ -63,6 +64,9 @@ public class GamePanel extends Canvas implements Runnable {
     public UserInterface ui = new UserInterface(this);
     public DialogManager dialogManager = new DialogManager(this);
     public UI_Dialog dialogUI = new UI_Dialog(this);
+
+    // BATTLE
+    public BattleManager battleManager = new BattleManager(this);
 
     // ENTITY AND OBJECT
     public Player player = new Player(this, keyH);
@@ -174,6 +178,10 @@ public class GamePanel extends Canvas implements Runnable {
             dialogUI.update();
         }
 
+        if (gameState == battleState) {
+            // TODO: battleUI.update() dipanggil di sini setelah UI_Battle dibuat
+        }
+
         if (fading) {
             fadeAlpha -= 1f / 60f;
             if (fadeAlpha <= 0) {
@@ -197,47 +205,52 @@ public class GamePanel extends Canvas implements Runnable {
             drawStart = System.nanoTime();
         }
 
-        // Tile
-        tileM.draw(g2);
+        if (gameState == worldState || gameState == pausedState) {
 
-        // Y-Sorting
-        entityList.clear();
-        entityList.add(player);
-        for (int i = 0; i < obj.length; i++) {
-            if (obj[i] != null) entityList.add(obj[i]);
-        }
-        for (int i = 0; i < npc.length; i++) {
-            if (npc[i] != null) entityList.add(npc[i]);
-        }
+            // Tile
+            tileM.draw(g2);
 
-        Collections.sort(entityList, new Comparator<Object>() {
-
-            @Override
-            public int compare(Object o1, Object o2) {
-
-                int y1 = 0, y2 = 0;
-                if (o1 instanceof Entity) y1 = ((Entity) o1).worldY;
-                else if (o1 instanceof ObjectManager) y1 = ((ObjectManager) o1).worldY;
-                if (o2 instanceof Entity) y2 = ((Entity) o2).worldY;
-                else if (o2 instanceof ObjectManager) y2 = ((ObjectManager) o2).worldY;
-                return Integer.compare(y1, y2);
-
+            // Y-Sorting
+            entityList.clear();
+            entityList.add(player);
+            for (int i = 0; i < obj.length; i++) {
+                if (obj[i] != null) entityList.add(obj[i]);
             }
-        });
+            for (int i = 0; i < npc.length; i++) {
+                if (npc[i] != null) entityList.add(npc[i]);
+            }
 
-        for (Object renderObj : entityList) {
-            if (renderObj instanceof Entity) ((Entity) renderObj).draw(g2);
-            else if (renderObj instanceof ObjectManager) ((ObjectManager) renderObj).draw(g2, this);
+            Collections.sort(entityList, new Comparator<Object>() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    int y1 = 0, y2 = 0;
+                    if (o1 instanceof Entity) y1 = ((Entity) o1).worldY;
+                    else if (o1 instanceof ObjectManager) y1 = ((ObjectManager) o1).worldY;
+                    if (o2 instanceof Entity) y2 = ((Entity) o2).worldY;
+                    else if (o2 instanceof ObjectManager) y2 = ((ObjectManager) o2).worldY;
+                    return Integer.compare(y1, y2);
+                }
+            });
+
+            for (Object renderObj : entityList) {
+                if (renderObj instanceof Entity) ((Entity) renderObj).draw(g2);
+                else if (renderObj instanceof ObjectManager) ((ObjectManager) renderObj).draw(g2, this);
+            }
+
+            // UI
+            ui.draw(g2);
+
+            // Interaction prompt
+            interactionM.draw(g2);
+
+            // Dialog
+            dialogUI.draw(g2);
+
         }
 
-        // UI
-        ui.draw(g2);
-
-        // Interaction prompt
-        interactionM.draw(g2);
-
-        // Dialog
-        dialogUI.draw(g2);
+        if (gameState == battleState) {
+            // TODO: battleUI.draw(g2) dipanggil di sini setelah UI_Battle dibuat
+        }
 
         // Debug HUD
         if (keyH.checkDrawTime) {
@@ -290,6 +303,7 @@ public class GamePanel extends Canvas implements Runnable {
         bs.show();
 
         Toolkit.getDefaultToolkit().sync();
+
     }
 
     public void playMusic(int i) {
@@ -312,4 +326,5 @@ public class GamePanel extends Canvas implements Runnable {
         SFX.play(i);
 
     }
+
 }
