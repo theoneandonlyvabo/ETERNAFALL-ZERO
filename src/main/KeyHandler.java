@@ -55,6 +55,7 @@ public class KeyHandler implements KeyListener {
             }
             if (code == KEY_NAV || code == KEY_PAUSE) {
                 gp.dialogManager.forceClose();
+                gp.dialogUI.reset();
                 interactPressed = false;
             }
             return;
@@ -137,5 +138,7 @@ public class KeyHandler implements KeyListener {
         if (code == KEY_LEFT)     leftPressed = false;
         if (code == KEY_RIGHT)    rightPressed = false;
         if (code == KEY_INTERACT) interactPressed = false;
+
     }
+
 }

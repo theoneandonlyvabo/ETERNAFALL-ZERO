@@ -32,9 +32,9 @@ public class UI_Dialog {
     private static final int   BOTTOM_OFFSET    = 40;
     private static final int   MAX_LINES        = 3;
     private static final int   LINE_SPACING     = 0;
-    private static final int   TYPEWRITER_SPEED = 2;
-    private static final int   PAUSE_COMMA      = 15;
-    private static final int   PAUSE_PERIOD     = 20;
+    private static final int   TYPEWRITER_SPEED = 3;
+    private static final int   PAUSE_COMMA      = 20;
+    private static final int   PAUSE_PERIOD     = 30;
     private static final int   PAUSE_SEPARATOR  = 60;
     private static final int   ICON_SIZE        = 128;
     private static final int   ICON_PAD_X       = 32;
@@ -279,12 +279,13 @@ public class UI_Dialog {
         }
     }
 
-    private void reset() {
+    public void reset() {
         displayedText = "";
         charIndex     = 0;
         frameCounter  = 0;
         pauseCounter  = 0;
         isDone        = false;
+        lastTarget    = null;
     }
 
 }
