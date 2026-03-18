@@ -6,16 +6,11 @@ import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextAttribute;
-import java.awt.font.TextLayout;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import javax.imageio.ImageIO;
 import main.GamePanel;
-import object.ObjectManager;
 
 public class HUD {
 
@@ -107,13 +102,13 @@ public class HUD {
     }
 
     public void draw(Graphics2D g2) {
-        g2.drawImage(playerBar, 0, 0, null);
-        drawHpBar(g2);
-        drawShards(g2);
-        drawHp(g2);
-        drawLevel(g2);
-        drawArmament(g2);
-        drawRelic(g2);
+        // g2.drawImage(playerBar, 0, 0, null);
+        // drawHpBar(g2);
+        // drawShards(g2);
+        // drawHp(g2);
+        // drawLevel(g2);
+        // drawArmament(g2);
+        // drawRelic(g2);
     }
 
     // =========================================================
@@ -197,36 +192,4 @@ public class HUD {
         g2.drawString(text, RELIC_X, RELIC_Y);
     }
 
-    // =========================================================
-    // INTERACT PROMPT
-    // =========================================================
-    public void drawInteractPrompt(Graphics2D g2) {
-        if (gp.interactionM.currentTarget == null) return;
-        if (!(gp.interactionM.currentTarget instanceof ObjectManager obj)) return;
-        if (obj.interactPrompt == null || obj.interactPrompt.isEmpty()) return;
-        if (fontPrompt == null || buttonE == null) return;
-
-        String label = obj.interactPrompt;
-        Font trackedFont = fontPrompt.deriveFont(Map.of(TextAttribute.TRACKING, PROMPT_TRACKING));
-
-        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-        g2.setFont(trackedFont);
-
-        FontRenderContext frc  = g2.getFontRenderContext();
-        TextLayout layout      = new TextLayout(label, trackedFont, frc);
-        int textWidth          = (int) layout.getAdvance();
-
-        FontMetrics fm  = g2.getFontMetrics(trackedFont);
-        int textHeight  = fm.getAscent() - fm.getDescent();
-
-        int x     = gp.screenWidth - PROMPT_PADDING_X - PROMPT_ICON_W - PROMPT_ICON_TEXT_GAP - textWidth;
-        x         = Math.max(PROMPT_PADDING_X, x);
-        int y     = gp.screenHeight - PROMPT_PADDING_Y;
-        int iconY = y - PROMPT_ICON_H + PROMPT_ICON_OFFSET_Y;
-        int textY = iconY + (PROMPT_ICON_H / 2) + (textHeight / 2);
-
-        g2.drawImage(buttonE, x, iconY, PROMPT_ICON_W, PROMPT_ICON_H, null);
-        g2.setColor(Color.white);
-        g2.drawString(label, x + PROMPT_ICON_W + PROMPT_ICON_TEXT_GAP, textY);
-    }
 }

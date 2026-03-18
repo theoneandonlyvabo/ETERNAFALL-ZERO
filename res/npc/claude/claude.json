@@ -1,0 +1,34 @@
+{
+    "id": "claude",
+    "name": "Claude",
+    "role": "curator",
+    "dialog": [
+        {
+            "id": "initial_claude",
+            "priority": 10,
+            "one_time": true,
+            "condition": null,
+            "lines": [
+                "Yo I'm Claude.|I pick things up, write things down — call it what you want.",
+                "Most folks walk past without a word, You stopped.|Interesting...",
+                "I know a lot of things about this place that nobody thought to ask about.",
+                "Here's one!|Withershards. People treat them like coin. They're not.",
+                "They're what's left when something dies and doesn't fully disappear.",
+                "Every shard is a remnant. Make of that what you will.",
+                "If something's not adding up, come find me.|I'll be here."
+            ],
+            "action": null
+        },
+        {
+            "id": "default_claude",
+            "priority": 0,
+            "one_time": false,
+            "condition": null,
+            "lines": [
+                "Still here. Still listening.",
+                "What's on your mind?"
+            ],
+            "action": null
+        }
+    ]
+}

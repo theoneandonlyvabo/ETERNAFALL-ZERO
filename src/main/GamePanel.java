@@ -170,8 +170,11 @@ public class GamePanel extends Canvas implements Runnable {
         if (gameState == worldState && !fading && !ui.actionBar.isOpen()
                 && !dialogManager.isActive) {
             player.update();
-            interactionM.update();
             itemManager.update(1f / FPS);
+        }
+
+        if (gameState == worldState && !fading && !ui.actionBar.isOpen()) {
+            interactionM.update();
         }
 
         if (dialogManager.isActive) {

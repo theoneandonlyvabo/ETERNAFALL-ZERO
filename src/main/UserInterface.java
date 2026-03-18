@@ -35,7 +35,6 @@ public class UserInterface {
         // World UI — selalu draw kecuali battle
         if (gp.gameState != GamePanel.battleState) {
             hud.draw(g2);
-            hud.drawInteractPrompt(g2);
 
             UI_ActionBar.Mode mode = actionBar.getMode();
 

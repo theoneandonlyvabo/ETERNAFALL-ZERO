@@ -1,38 +1,15 @@
 package entity;
 
-import battle.BattleMove;
-import battle.EnemyData;
 import java.awt.Rectangle;
-import java.util.List;
 import main.GamePanel;
 import main.Interactable;
 
-public class Messmer extends Entity implements Interactable {
+public class Claude extends Entity implements Interactable {
 
-    private static final int MAX_HP            = 100;
-    private static final int STRIKES_PER_ROUND = 3;
-    private static final int FRAME_DEFAULT     = 120; // placeholder
+    private static final int SPAWN_COL = 13;
+    private static final int SPAWN_ROW = 6;
 
-    private static final int SPAWN_COL = 25;
-    private static final int SPAWN_ROW = 12;
-
-    public static final EnemyData DATA = new EnemyData(
-        "Messmer the Impaler",
-        MAX_HP,
-        STRIKES_PER_ROUND,
-        List.of(
-            new BattleMove("Spear Thrust",        3, FRAME_DEFAULT),
-            new BattleMove("Double Spear Swing",  5, FRAME_DEFAULT),
-            new BattleMove("Fire Serpent",         7, FRAME_DEFAULT),
-            new BattleMove("Flaming Assault",      6, FRAME_DEFAULT),
-            new BattleMove("Flaming Spear Lunge",  8, FRAME_DEFAULT)
-        )
-    );
-
-    // -------------------------------------------------------------------------
-    // CONSTRUCTOR
-    // -------------------------------------------------------------------------
-    public Messmer(GamePanel gp) {
+    public Claude(GamePanel gp) {
 
         super(gp);
 
@@ -54,7 +31,7 @@ public class Messmer extends Entity implements Interactable {
     }
 
     public void getImage() {
-        // TODO: ganti ke sprite Messmer waktu udah ada
+
         up1    = setup("/npc/npc_testdummy");
         up2    = setup("/npc/npc_testdummy");
         up3    = setup("/npc/npc_testdummy");
@@ -71,17 +48,18 @@ public class Messmer extends Entity implements Interactable {
         right2 = setup("/npc/npc_testdummy");
         right3 = setup("/npc/npc_testdummy");
         right4 = setup("/npc/npc_testdummy");
+
     }
 
     @Override public float  getInteractRadius() { return gp.tileSize * 1.5f; }
     @Override public int    getWorldX()         { return worldX; }
     @Override public int    getWorldY()         { return worldY; }
     @Override public String getPromptText()     { return "Talk"; }
-    @Override public String getIconPath()       { return "/npc/messmer/icon_messmer_the_impaler.png"; }
+    @Override public String getIconPath()       { return "/npc/claude/icon_claude.png"; }
 
     @Override
     public void interact() {
-        gp.dialogManager.startDialog("npc_messmer");
+        gp.dialogManager.startDialog("claude");
     }
 
 }

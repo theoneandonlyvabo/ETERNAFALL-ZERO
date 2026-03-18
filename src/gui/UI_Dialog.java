@@ -5,10 +5,15 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javax.imageio.ImageIO;
 import main.GamePanel;
+import main.Interactable;
 
 public class UI_Dialog {
 
@@ -24,31 +29,31 @@ public class UI_Dialog {
     private static final int   PAD_Y            = 25;
     private static final int   TEXT_INDENT      = 200;
     private static final int   STAR_MARGIN      = 10;
-    private static final int   BOTTOM_OFFSET    = 80;
+    private static final int   BOTTOM_OFFSET    = 40;
     private static final int   MAX_LINES        = 3;
     private static final int   LINE_SPACING     = 0;
-    private static final int   TYPEWRITER_SPEED = 3;
-    private static final int   PAUSE_COMMA      = 20;
-    private static final int   PAUSE_PERIOD     = 30;
+    private static final int   TYPEWRITER_SPEED = 2;
+    private static final int   PAUSE_COMMA      = 15;
+    private static final int   PAUSE_PERIOD     = 20;
     private static final int   PAUSE_SEPARATOR  = 60;
+    private static final int   ICON_SIZE        = 128;
+    private static final int   ICON_PAD_X       = 32;
     private static final String LINE_SEPARATOR  = "|";
 
-    private static final Color COLOR_BG     = new Color(0x0a, 0x0a, 0x0a, 255);
-    private static final Color COLOR_BORDER = new Color(0x4f, 0x49, 0x3b, 255);
-    private static final Color COLOR_TEXT   = new Color(0xa2, 0x9f, 0x7e, 255);
+    private static final Color COLOR_BG     = Color.decode("#0a0a0a");
+    private static final Color COLOR_BORDER = Color.decode("#4f493b");
+    private static final Color COLOR_TEXT   = Color.decode("#a29f7e");
+
+    // Icon cache — hindari reload tiap frame
+    private final Map<String, BufferedImage> iconCache = new HashMap<>();
 
     // State
-    private String displayedText = "";
-    private int charIndex        = 0;
-    private int frameCounter     = 0;
-    private int pauseCounter     = 0;
-    private boolean isDone       = false;
-
-    private String lastTarget    = null;
-
-    // Cached layout from full target — fixed so position never shifts
-    private int     cachedTotalLines = 1;
-    private int     cachedTextY      = 0;
+    private String  displayedText = "";
+    private int     charIndex     = 0;
+    private int     frameCounter  = 0;
+    private int     pauseCounter  = 0;
+    private boolean isDone        = false;
+    private String  lastTarget    = null;
 
     public UI_Dialog(GamePanel gp) {
 
@@ -103,16 +108,13 @@ public class UI_Dialog {
         if (target == null) return;
 
         if (!isDone) {
-            // Cari | berikutnya setelah charIndex
             int nextSep = target.indexOf('|', charIndex);
             if (nextSep != -1) {
-                // Skip ke tepat setelah |
                 charIndex     = nextSep + 1;
                 displayedText = target.substring(0, charIndex);
                 pauseCounter  = 0;
                 frameCounter  = 0;
             } else {
-                // Nggak ada | lagi, skip ke akhir
                 displayedText = target;
                 charIndex     = target.length();
                 isDone        = true;
@@ -131,8 +133,8 @@ public class UI_Dialog {
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
-        int boxX = (gp.screenWidth  - BOX_W) / 2;
-        int boxY = (gp.screenHeight - BOX_H) / 2;
+        int boxX = (gp.screenWidth - BOX_W) / 2;
+        int boxY = gp.screenHeight - BOX_H - BOTTOM_OFFSET;
 
         // Background
         g2.setColor(COLOR_BG);
@@ -149,18 +151,20 @@ public class UI_Dialog {
         );
         g2.setStroke(new java.awt.BasicStroke(1));
 
+        // NPC Icon
+        drawIcon(g2, boxX, boxY);
+
+        // Text
         g2.setFont(dialogFont);
         FontMetrics fm = g2.getFontMetrics();
 
         int textX    = boxX + TEXT_INDENT;
-        int starX    = textX - STAR_MARGIN - fm.stringWidth("*");
         int maxWidth = BOX_W - TEXT_INDENT - PAD_X;
         int lineH    = fm.getHeight() + LINE_SPACING;
+        int textY    = boxY + PAD_Y + fm.getAscent();
 
         String target = gp.dialogManager.getCurrentLine();
         if (target == null) return;
-
-        int textY = boxY + PAD_Y + fm.getAscent();
 
         List<RenderLine> displayLayout = buildLayout(displayedText, target, fm, maxWidth);
 
@@ -168,11 +172,46 @@ public class UI_Dialog {
         int drawn = 0;
         for (RenderLine rl : displayLayout) {
             if (drawn >= MAX_LINES) break;
-            if (rl.isStar) g2.drawString("", starX, textY + (drawn * lineH)); // Pointers
-            g2.drawString(rl.text, textX, textY + (drawn * lineH));
+            drawSegments(g2, rl.text, textX, textY + (drawn * lineH), fm);
             drawn++;
         }
 
+    }
+
+    private void drawIcon(Graphics2D g2, int boxX, int boxY) {
+
+        Interactable target = gp.interactionM.currentTarget;
+        if (target == null) return;
+
+        String path = target.getIconPath();
+        if (path == null) return;
+
+        BufferedImage icon = iconCache.computeIfAbsent(path, p -> {
+            try {
+                InputStream is = getClass().getResourceAsStream(p);
+                if (is == null) return null;
+                return ImageIO.read(is);
+            } catch (Exception e) {
+                return null;
+            }
+        });
+
+        if (icon == null) return;
+
+        int iconX = boxX + ICON_PAD_X;
+        int iconY = boxY + (BOX_H - ICON_SIZE) / 2;
+        g2.drawImage(icon, iconX, iconY, ICON_SIZE, ICON_SIZE, null);
+
+    }
+
+    private void drawSegments(Graphics2D g2, String text, int x, int y, FontMetrics fm) {
+        List<UI_TextHighlighter.Segment> segments = UI_TextHighlighter.split(text, COLOR_TEXT);
+        int curX = x;
+        for (UI_TextHighlighter.Segment seg : segments) {
+            g2.setColor(seg.color != null ? seg.color : COLOR_TEXT);
+            g2.drawString(seg.text, curX, y);
+            curX += fm.stringWidth(seg.text);
+        }
     }
 
     private List<RenderLine> buildLayout(String displayText, String fullTarget, FontMetrics fm, int maxWidth) {
@@ -188,10 +227,8 @@ public class UI_Dialog {
             String fullSeg    = s < fullSegs.length ? fullSegs[s].trim() : "";
             String displaySeg = displaySegs[s].trim();
 
-            // Wrap boundaries fixed from full segment
             List<String> wrappedFull = wrapSegment(fullSeg, fm, maxWidth);
 
-            // Walk through wrapped lines, fill each with as many chars as fit
             int cursor = 0;
             for (int i = 0; i < wrappedFull.size(); i++) {
                 if (cursor >= displaySeg.length()) break;
@@ -199,7 +236,6 @@ public class UI_Dialog {
                 int end     = Math.min(cursor + lineLen, displaySeg.length());
                 result.add(new RenderLine(displaySeg.substring(cursor, end), i == 0));
                 cursor += lineLen;
-                // Account for the space between words that wrapSegment consumed
                 if (cursor < displaySeg.length() && displaySeg.charAt(cursor) == ' ') cursor++;
             }
         }

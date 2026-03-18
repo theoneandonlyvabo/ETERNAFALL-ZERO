@@ -1,10 +1,10 @@
 {
-    "id": "npc_testdummy",
-    "name": "Test Dummy",
-    "role": "default",
+    "id": "npc_messmer",
+    "name": "Messmer the Impaler",
+    "role": "battle",
     "dialog": [
         {
-            "id": "initial",
+            "id": "initial_messmer",
             "priority": 10,
             "one_time": true,
             "condition": null,
@@ -15,18 +15,18 @@
                 "Yet... My purpose standeth unchanged.",
                 "Those stripped of the Grace of Gold shall all meet death.|In the embrace of Messmer's flame."
             ],
-            "action": null
+            "action": { "type": "start_battle", "target": "messmer" }
         },
         {
-            "id": "default",
+            "id": "default_messmer",
             "priority": 0,
             "one_time": false,
             "condition": null,
             "lines": [
                 "...",
-                "O mother, forgive me."
+                "O Mother, forgive Me."
             ],
-            "action": null
+            "action": { "type": "start_battle", "target": "messmer" }
         }
     ]
 }
