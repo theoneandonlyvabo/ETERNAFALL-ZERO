@@ -1,6 +1,5 @@
 package main;
 
-import gui.UI_ActionBar.Mode;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -9,7 +8,7 @@ public class KeyHandler implements KeyListener {
     GamePanel gp;
 
     // -------------------------
-    // KEYBINDS — edit di sini
+    // KEYBINDS
     // -------------------------
     static final int KEY_UP        = KeyEvent.VK_W;
     static final int KEY_DOWN      = KeyEvent.VK_S;
@@ -18,11 +17,19 @@ public class KeyHandler implements KeyListener {
     static final int KEY_INTERACT  = KeyEvent.VK_E;
     static final int KEY_PAUSE     = KeyEvent.VK_ESCAPE;
     static final int KEY_NAV       = KeyEvent.VK_TAB;
-    static final int KEY_EQUIPMENT = KeyEvent.VK_F;
+    static final int KEY_PLAYER    = KeyEvent.VK_P;
     static final int KEY_INVENTORY = KeyEvent.VK_I;
     static final int KEY_MAP       = KeyEvent.VK_M;
+    static final int KEY_QUEST     = KeyEvent.VK_K;
     static final int KEY_DEBUG     = KeyEvent.VK_BACK_QUOTE;
     // -------------------------
+
+    // Index sinkron sama UI_Nav.NAV_ITEMS
+    static final int NAV_PLAYER    = 0;
+    static final int NAV_INVENTORY = 1;
+    static final int NAV_MAP       = 2;
+    static final int NAV_QUEST     = 3;
+    static final int NAV_SETTINGS  = 4;
 
     public boolean upPressed, downPressed, leftPressed, rightPressed;
     public boolean interactPressed;
@@ -47,7 +54,7 @@ public class KeyHandler implements KeyListener {
 
         int code = e.getKeyCode();
 
-        // Dialog aktif — konsumsi E, block semua input lain
+        // ── Dialog aktif ──
         if (gp.dialogManager.isActive) {
             if (code == KEY_INTERACT) {
                 gp.dialogUI.onAdvance();
@@ -61,12 +68,57 @@ public class KeyHandler implements KeyListener {
             return;
         }
 
-        if (code == KEY_UP)       { upPressed = true;    lastDir = FacingDirection.UP;    }
-        if (code == KEY_DOWN)     { downPressed = true;  lastDir = FacingDirection.DOWN;  }
-        if (code == KEY_LEFT)     { leftPressed = true;  lastDir = FacingDirection.LEFT;  }
-        if (code == KEY_RIGHT)    { rightPressed = true; lastDir = FacingDirection.RIGHT; }
+        // ── Nav open ──
+        if (gp.nav.isOpen()) {
+
+            if (code == KEY_NAV) { gp.nav.onTab(); return; }
+
+            if (gp.nav.panelOpen) {
+                // Shortcut pindah panel atau tutup
+                if (code == KEY_PLAYER)    { gp.nav.onShortcut(NAV_PLAYER);    return; }
+                if (code == KEY_INVENTORY) { gp.nav.onShortcut(NAV_INVENTORY); return; }
+                if (code == KEY_MAP)       { gp.nav.onShortcut(NAV_MAP);       return; }
+                if (code == KEY_QUEST)     { gp.nav.onShortcut(NAV_QUEST);     return; }
+                if (code == KEY_PAUSE)     { gp.nav.onShortcut(NAV_SETTINGS);  return; }
+                return;
+            }
+
+            // Nav open, panel belum buka
+            if (code == KEY_UP)       { gp.nav.onNavUp();   return; }
+            if (code == KEY_DOWN)     { gp.nav.onNavDown(); return; }
+            if (code == KEY_INTERACT) { gp.nav.onConfirm(); return; }
+
+            if (code == KEY_PLAYER)    { gp.nav.onShortcut(NAV_PLAYER);    return; }
+            if (code == KEY_INVENTORY) { gp.nav.onShortcut(NAV_INVENTORY); return; }
+            if (code == KEY_MAP)       { gp.nav.onShortcut(NAV_MAP);       return; }
+            if (code == KEY_QUEST)     { gp.nav.onShortcut(NAV_QUEST);     return; }
+            if (code == KEY_PAUSE)     { gp.nav.onShortcut(NAV_SETTINGS);  return; }
+
+            return; // block movement saat nav terbuka
+        }
+
+        // ── Exploration ──
+        if (code == KEY_UP)    { upPressed = true;    lastDir = FacingDirection.UP;    }
+        if (code == KEY_DOWN)  { downPressed = true;  lastDir = FacingDirection.DOWN;  }
+        if (code == KEY_LEFT)  { leftPressed = true;  lastDir = FacingDirection.LEFT;  }
+        if (code == KEY_RIGHT) { rightPressed = true; lastDir = FacingDirection.RIGHT; }
         if (code == KEY_INTERACT) interactPressed = true;
 
+        if (code == KEY_NAV) {
+            if (!isMoving() && gp.gameState == GamePanel.worldState && !gp.dialogManager.isActive) {
+                gp.nav.onTab();
+            }
+            return;
+        }
+
+        if (!isMoving() && gp.gameState == GamePanel.worldState) {
+            if (code == KEY_PLAYER)    { gp.nav.onShortcut(NAV_PLAYER);    return; }
+            if (code == KEY_INVENTORY) { gp.nav.onShortcut(NAV_INVENTORY); return; }
+            if (code == KEY_MAP)       { gp.nav.onShortcut(NAV_MAP);       return; }
+            if (code == KEY_QUEST)     { gp.nav.onShortcut(NAV_QUEST);     return; }
+        }
+
+        // ESC saat exploration = pause
         if (code == KEY_PAUSE) {
             if (gp.gameState == GamePanel.worldState) {
                 gp.gameState = GamePanel.pausedState;
@@ -76,52 +128,6 @@ public class KeyHandler implements KeyListener {
                 gp.gameState = GamePanel.worldState;
                 gp.music.resumeAll();
                 gp.delta = 0;
-            }
-        }
-
-        if (code == KEY_NAV) {
-            if (!isMoving() && gp.gameState == GamePanel.worldState && !gp.dialogManager.isActive && gp.ui.actionBar.canToggleNav()) {
-                Mode mode = gp.ui.actionBar.getMode();
-                if (mode == Mode.NONE) {
-                    gp.ui.actionBar.setMode(Mode.NAV);
-                } else if (mode == Mode.NAV) {
-                    gp.ui.actionBar.close();
-                } else {
-                    gp.ui.actionBar.setMode(Mode.NAV);
-                }
-            }
-        }
-
-        if (code == KEY_EQUIPMENT) {
-            if (!isMoving() && gp.gameState == GamePanel.worldState && gp.ui.actionBar.canTogglePanel()) {
-                Mode mode = gp.ui.actionBar.getMode();
-                if (mode == Mode.EQUIPMENT) {
-                    gp.ui.actionBar.close();
-                } else {
-                    gp.ui.actionBar.setMode(Mode.EQUIPMENT);
-                }
-            }
-        }
-
-        if (code == KEY_INVENTORY) {
-            if (!isMoving() && gp.gameState == GamePanel.worldState && gp.ui.actionBar.canTogglePanel()) {
-                Mode mode = gp.ui.actionBar.getMode();
-                if (mode == Mode.INVENTORY) {
-                    gp.ui.actionBar.close();
-                } else {
-                    gp.ui.actionBar.setMode(Mode.INVENTORY);
-                }
-            }
-        }
-
-        if (code == KEY_MAP) {
-            if (!isMoving() && gp.gameState == GamePanel.worldState && gp.ui.actionBar.canTogglePanel()) {
-                Mode mode = gp.ui.actionBar.getMode();
-                if (mode == Mode.MAP) {
-                    gp.ui.actionBar.close();
-                } else {
-                    gp.ui.actionBar.setMode(Mode.MAP);
-                }
             }
         }
 
@@ -138,7 +144,5 @@ public class KeyHandler implements KeyListener {
         if (code == KEY_LEFT)     leftPressed = false;
         if (code == KEY_RIGHT)    rightPressed = false;
         if (code == KEY_INTERACT) interactPressed = false;
-
     }
-
 }

@@ -5,6 +5,7 @@ import dialog.DialogManager;
 import entity.Entity;
 import entity.Player;
 import gui.UI_Dialog;
+import gui.UI_Nav;
 import item.ItemManager;
 import java.awt.AlphaComposite;
 import java.awt.Canvas;
@@ -47,7 +48,7 @@ public class GamePanel extends Canvas implements Runnable {
     TileManager tileM = new TileManager(this);
     KeyHandler keyH = new KeyHandler(this);
     public Sound music = new Sound();
-    Sound SFX = new Sound();
+    public Sound SFX = new Sound();
     public CollisionChecker cChecker = new CollisionChecker(this);
     public AssetSetter aSetter = new AssetSetter(this);
     public InteractionManager interactionM = new InteractionManager(this);
@@ -64,6 +65,7 @@ public class GamePanel extends Canvas implements Runnable {
     public UserInterface ui = new UserInterface(this);
     public DialogManager dialogManager = new DialogManager(this);
     public UI_Dialog dialogUI = new UI_Dialog(this);
+    public UI_Nav nav = new UI_Nav(this);
 
     // BATTLE
     public BattleManager battleManager = new BattleManager(this);
@@ -167,13 +169,12 @@ public class GamePanel extends Canvas implements Runnable {
 
     public void update() {
 
-        if (gameState == worldState && !fading && !ui.actionBar.isOpen()
-                && !dialogManager.isActive) {
+        if (gameState == worldState && !fading && !nav.isOpen() && !dialogManager.isActive) {
             player.update();
             itemManager.update(1f / FPS);
         }
 
-        if (gameState == worldState && !fading && !ui.actionBar.isOpen()) {
+        if (gameState == worldState && !fading && !nav.isOpen()) {
             interactionM.update();
         }
 
@@ -245,6 +246,10 @@ public class GamePanel extends Canvas implements Runnable {
 
             // Interaction prompt
             interactionM.draw(g2);
+
+            // Navbar
+            nav.draw(g2);
+            dialogUI.draw(g2);
 
             // Dialog
             dialogUI.draw(g2);

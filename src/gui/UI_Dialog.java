@@ -20,31 +20,33 @@ public class UI_Dialog {
     private final GamePanel gp;
     private Font dialogFont;
 
+    // =========================================================
     // CONFIG
-    private static final float FONT_SIZE        = 32f;
-    private static final int   BOX_W            = 856;
-    private static final int   BOX_H            = 180;
-    private static final int   BORDER_THICKNESS = 8;
-    private static final int   PAD_X            = 25;
-    private static final int   PAD_Y            = 25;
-    private static final int   TEXT_INDENT      = 192;
-    private static final int   STAR_MARGIN      = 10;
-    private static final int   BOTTOM_OFFSET    = 40;
-    private static final int   MAX_LINES        = 3;
-    private static final int   LINE_SPACING     = 0;
-    private static final int   TYPEWRITER_SPEED = 3;
-    private static final int   PAUSE_COMMA      = 20;
-    private static final int   PAUSE_PERIOD     = 30;
-    private static final int   PAUSE_SEPARATOR  = 60;
-    private static final int   ICON_SIZE        = 128;
-    private static final int   ICON_PAD_X       = 32;
-    private static final String LINE_SEPARATOR  = "|";
+    // =========================================================
+    private static final float  FONT_SIZE        = 32f;
+    private static final int    BOX_W            = 856;
+    private static final int    BOX_H            = 180;
+    private static final int    BORDER_THICKNESS = 8;
+    private static final int    PAD_X            = 25;
+    private static final int    PAD_Y            = 25;
+    private static final int    TEXT_INDENT      = 192;
+    private static final int    BOTTOM_OFFSET    = 40;
+    private static final int    MAX_LINES        = 3;
+    private static final int    LINE_SPACING     = 0;
+    private static final int    TYPEWRITER_SPEED = 2;
+    private static final int    PAUSE_COMMA      = 20;
+    private static final int    PAUSE_PERIOD     = 30;
+    private static final int    PAUSE_SEPARATOR  = 60;
+    private static final int    ICON_SIZE        = 128;
+    private static final int    ICON_PAD_X       = 32;
+    private static final String LINE_SEPARATOR   = "|";
 
-    private static final Color COLOR_BG     = Color.decode("#0a0a0a");
+    private static final Color COLOR_BG     = Color.decode("#000000");
     private static final Color COLOR_BORDER = Color.decode("#4f493b");
     private static final Color COLOR_TEXT   = Color.decode("#a29f7e");
+    // =========================================================
 
-    // Icon cache — hindari reload tiap frame
+    // Icon cache
     private final Map<String, BufferedImage> iconCache = new HashMap<>();
 
     // State
@@ -91,7 +93,10 @@ public class UI_Dialog {
                     charIndex++;
                     displayedText = target.substring(0, charIndex);
                     char last = target.charAt(charIndex - 1);
-                    if (last == '.')      pauseCounter = PAUSE_PERIOD;
+                    // Notify DialogManager tiap karakter muncul — skip separator dan spasi
+                    if (last != '|' && last != ' ' && last != '.' && last != ',' && last != '!' 
+                        && last != '?' && last != ':' && last != ';') gp.dialogManager.onCharRevealed();
+                    if      (last == '.') pauseCounter = PAUSE_PERIOD;
                     else if (last == ',') pauseCounter = PAUSE_COMMA;
                     else if (last == '|') pauseCounter = PAUSE_SEPARATOR;
                 } else {
@@ -178,6 +183,9 @@ public class UI_Dialog {
 
     }
 
+    // =========================================================
+    // ICON
+    // =========================================================
     private void drawIcon(Graphics2D g2, int boxX, int boxY) {
 
         Interactable target = gp.interactionM.currentTarget;
@@ -204,6 +212,9 @@ public class UI_Dialog {
 
     }
 
+    // =========================================================
+    // RENDER HELPERS
+    // =========================================================
     private void drawSegments(Graphics2D g2, String text, int x, int y, FontMetrics fm) {
         List<UI_TextHighlighter.Segment> segments = UI_TextHighlighter.split(text, COLOR_TEXT);
         int curX = x;

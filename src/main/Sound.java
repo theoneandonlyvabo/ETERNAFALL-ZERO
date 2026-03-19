@@ -23,6 +23,9 @@ public class Sound {
         soundURL[2]  = getClass().getResource("/sound/load_dungeon.wav");
         volumeURL[2] = 1.0f;
 
+        soundURL[3]  = getClass().getResource("/sound/sfx_nav.wav");
+        volumeURL[3] = 1.0f;
+
     }
 
     public void setFile(int i) {
@@ -49,7 +52,24 @@ public class Sound {
         if (clips[i] != null && !clips[i].isRunning()) clips[i].start();
     }
 
-    // volume: 0.0f (mute) sampai 1.0f (max)
+    // =========================================================
+    // DYNAMIC SFX — load dan play langsung dari resource path
+    // =========================================================
+    public void playSfx(String resourcePath) {
+        try {
+            URL url = getClass().getResource(resourcePath);
+            if (url == null) return;
+            AudioInputStream ais = AudioSystem.getAudioInputStream(url);
+            Clip clip = AudioSystem.getClip();
+            clip.open(ais);
+            clip.start();
+        } catch (Exception e) {
+            // silent fail — sfx bukan critical
+        }
+    }
+
+    // =========================================================
+
     static final float VOLUME_MIN = 0.0001f;
     static final float VOLUME_MAX = 1.0f;
 
@@ -77,4 +97,5 @@ public class Sound {
     public void resumeAll() {
         for (Clip c : clips) if (c != null && !c.isRunning()) c.start();
     }
+
 }

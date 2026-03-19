@@ -10,17 +10,22 @@ import main.GamePanel;
 
 public class DialogManager {
 
+    // CONFIG
+    private static final int SFX_COOLDOWN = 1; // frame minimum antar sfx
+
     private final GamePanel gp;
     private final DialogParser parser = new DialogParser();
 
     private final Map<String, NpcDialogData> cache     = new HashMap<>();
     private final Set<String>                seenFlags = new HashSet<>();
 
-    public boolean     isActive     = false;
+    public boolean       isActive     = false;
     private List<String> currentLines;
     private int          lineIndex    = 0;
     private String       pendingNpcId = null;
     private DialogEntry  pendingEntry = null;
+
+    private int sfxCooldownCounter = 0;
 
     public DialogManager(GamePanel gp) {
         this.gp = gp;
@@ -34,11 +39,12 @@ public class DialogManager {
         DialogEntry entry = resolveEntry(data.dialog);
         if (entry == null || entry.lines == null || entry.lines.isEmpty()) return;
 
-        currentLines = entry.lines;
-        lineIndex    = 0;
-        pendingNpcId = npcId;
-        pendingEntry = entry;
-        isActive     = true;
+        currentLines       = entry.lines;
+        lineIndex          = 0;
+        pendingNpcId       = npcId;
+        pendingEntry       = entry;
+        isActive           = true;
+        sfxCooldownCounter = 0;
 
     }
 
@@ -58,6 +64,22 @@ public class DialogManager {
 
     }
 
+    // =========================================================
+    // SFX — dipanggil UI_Dialog tiap karakter muncul
+    // =========================================================
+    public void onCharRevealed() {
+        if (sfxCooldownCounter > 0) {
+            sfxCooldownCounter--;
+            return;
+        }
+        if (pendingNpcId == null) return;
+        String folder = pendingNpcId.replace("npc_", "");
+        gp.SFX.playSfx("/npc/" + folder + "/sfx_" + folder + ".wav");
+        sfxCooldownCounter = SFX_COOLDOWN;
+    }
+
+    // =========================================================
+
     private void finishDialog() {
 
         if (pendingEntry != null) {
@@ -65,19 +87,20 @@ public class DialogManager {
             if (pendingEntry.action  != null) executeAction(pendingEntry.action);
         }
 
-        isActive     = false;
-        currentLines = null;
-        lineIndex    = 0;
-        pendingEntry = null;
-        pendingNpcId = null;
+        isActive           = false;
+        currentLines       = null;
+        lineIndex          = 0;
+        pendingEntry       = null;
+        pendingNpcId       = null;
+        sfxCooldownCounter = 0;
 
     }
 
     private void executeAction(DialogEntry.DialogAction action) {
 
         switch (action.type) {
-            case "setPath"     -> gp.player.currentPath = action.target;
-            case "markSeen"    -> seenFlags.add(action.target);
+            case "setPath"      -> gp.player.currentPath = action.target;
+            case "markSeen"     -> seenFlags.add(action.target);
             case "start_battle" -> startBattle(action.target);
         }
 
@@ -132,6 +155,8 @@ public class DialogManager {
 
     }
 
+    public String getCurrentNpcId() { return pendingNpcId; }
+
     public String getCurrentNpcRole() {
         if (pendingNpcId == null) return null;
         NpcDialogData data = cache.get(pendingNpcId);
@@ -145,11 +170,12 @@ public class DialogManager {
     }
 
     public void forceClose() {
-        isActive     = false;
-        currentLines = null;
-        lineIndex    = 0;
-        pendingEntry = null;
-        pendingNpcId = null;
+        isActive           = false;
+        currentLines       = null;
+        lineIndex          = 0;
+        pendingEntry       = null;
+        pendingNpcId       = null;
+        sfxCooldownCounter = 0;
     }
 
     public boolean hasSeen(String dialogId) {
