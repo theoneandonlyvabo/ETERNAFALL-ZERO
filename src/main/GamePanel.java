@@ -6,6 +6,7 @@ import entity.Entity;
 import entity.Player;
 import gui.UI_Dialog;
 import gui.UI_Nav;
+import gui.UI_Player;
 import item.ItemManager;
 import java.awt.AlphaComposite;
 import java.awt.Canvas;
@@ -66,6 +67,7 @@ public class GamePanel extends Canvas implements Runnable {
     public DialogManager dialogManager = new DialogManager(this);
     public UI_Dialog dialogUI = new UI_Dialog(this);
     public UI_Nav nav = new UI_Nav(this);
+    public UI_Player playerPanel = new UI_Player(this);
 
     // BATTLE
     public BattleManager battleManager = new BattleManager(this);
@@ -249,9 +251,7 @@ public class GamePanel extends Canvas implements Runnable {
 
             // Navbar
             nav.draw(g2);
-            dialogUI.draw(g2);
-
-            // Dialog
+            if (nav.panelOpen && nav.activeIndex == 0) playerPanel.draw(g2);
             dialogUI.draw(g2);
 
         }

@@ -1,22 +1,24 @@
 package object;
 
-import item.Armament;
-import item.Item;
+import item.Relic;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import main.GamePanel;
 
-public class OBJ_TestItem extends ObjectManager {
+public class OBJ_TestRelic extends ObjectManager {
 
     private final GamePanel gp;
-    public Item item;
+    public Relic item;
 
-    public OBJ_TestItem(GamePanel gp) {
+    public OBJ_TestRelic(GamePanel gp) {
 
-        this.gp   = gp;
-        this.item = new Armament("Test Item", "Armament Test Item", Armament.ArmamentType.SWORD, 0, 999);
+        this.gp  = gp;
+        this.item = new Relic(
+            "Test Relic", "Placeholder relic.",
+            1, "No effect.", 120
+        );
 
-        name          = item.name;
+        name           = item.name;
         interactPrompt = "Pick Up";
         collision      = false;
         interactRadius = 1.5f * gp.tileSize;
@@ -32,9 +34,6 @@ public class OBJ_TestItem extends ObjectManager {
 
     @Override
     public void interact() {
-
-        gp.itemManager.lastPickedName = item.name;
-
         if (gp.itemManager.addItem(item)) {
             for (int i = 0; i < gp.obj.length; i++) {
                 if (gp.obj[i] == this) {
@@ -43,7 +42,6 @@ public class OBJ_TestItem extends ObjectManager {
                 }
             }
         }
-
     }
 
 }

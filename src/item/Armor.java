@@ -7,10 +7,10 @@ public class Armor extends Item {
     }
 
     public ArmorType armorType;
-    public int hpBonus;
+    public int       hpBonus;
 
-    public Armor(String name, String description, ArmorType armorType, int levelReq, int hpBonus) {
-        super(name, description, levelReq, ItemType.ARMOR);
+    public Armor(String name, String description, ArmorType armorType, int levelReq, int hpBonus, int value) {
+        super(name, description, levelReq, ItemType.ARMOR, value);
         this.armorType = armorType;
         this.hpBonus   = hpBonus;
     }
@@ -18,4 +18,5 @@ public class Armor extends Item {
     public int getHpBonus() {
         return hpBonus;
     }
+
 }

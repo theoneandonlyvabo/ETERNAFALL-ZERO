@@ -68,13 +68,35 @@ public class KeyHandler implements KeyListener {
             return;
         }
 
+        // ── Player panel aktif ──
+        if (gp.nav.isOpen() && gp.nav.panelOpen && gp.nav.activeIndex == NAV_PLAYER) {
+            switch (code) {
+                case KeyEvent.VK_W -> gp.playerPanel.onUp();
+                case KeyEvent.VK_S -> gp.playerPanel.onDown();
+                case KeyEvent.VK_A -> gp.playerPanel.onLeft();
+                case KeyEvent.VK_D -> gp.playerPanel.onRight();
+                case KeyEvent.VK_E -> gp.playerPanel.onConfirm();
+                default -> {
+                    // TAB atau ESC: kalau context buka tutup context, kalau tidak balik ke nav
+                    if (code == KEY_NAV || code == KEY_PAUSE) {
+                        if (gp.playerPanel.contextOpen) {
+                            gp.playerPanel.onCancel();
+                        } else {
+                            gp.playerPanel.reset();
+                            gp.nav.onTab();
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
         // ── Nav open ──
         if (gp.nav.isOpen()) {
 
             if (code == KEY_NAV) { gp.nav.onTab(); return; }
 
             if (gp.nav.panelOpen) {
-                // Shortcut pindah panel atau tutup
                 if (code == KEY_PLAYER)    { gp.nav.onShortcut(NAV_PLAYER);    return; }
                 if (code == KEY_INVENTORY) { gp.nav.onShortcut(NAV_INVENTORY); return; }
                 if (code == KEY_MAP)       { gp.nav.onShortcut(NAV_MAP);       return; }
@@ -83,7 +105,6 @@ public class KeyHandler implements KeyListener {
                 return;
             }
 
-            // Nav open, panel belum buka
             if (code == KEY_UP)       { gp.nav.onNavUp();   return; }
             if (code == KEY_DOWN)     { gp.nav.onNavDown(); return; }
             if (code == KEY_INTERACT) { gp.nav.onConfirm(); return; }
@@ -94,7 +115,7 @@ public class KeyHandler implements KeyListener {
             if (code == KEY_QUEST)     { gp.nav.onShortcut(NAV_QUEST);     return; }
             if (code == KEY_PAUSE)     { gp.nav.onShortcut(NAV_SETTINGS);  return; }
 
-            return; // block movement saat nav terbuka
+            return;
         }
 
         // ── Exploration ──
@@ -118,7 +139,6 @@ public class KeyHandler implements KeyListener {
             if (code == KEY_QUEST)     { gp.nav.onShortcut(NAV_QUEST);     return; }
         }
 
-        // ESC saat exploration = pause
         if (code == KEY_PAUSE) {
             if (gp.gameState == GamePanel.worldState) {
                 gp.gameState = GamePanel.pausedState;

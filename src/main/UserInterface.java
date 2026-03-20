@@ -2,10 +2,10 @@ package main;
 
 import gui.HUD;
 import gui.UI_ActionBar;
-import gui.UI_Equipment;
 import gui.UI_Inventory;
 import gui.UI_Map;
 import gui.UI_Paused;
+import gui.UI_Player;
 import java.awt.Graphics2D;
 
 public class UserInterface {
@@ -16,7 +16,7 @@ public class UserInterface {
     HUD hud;
     public UI_Paused paused;
     public UI_ActionBar actionBar;
-    UI_Equipment equipment;
+    public UI_Player player;
     UI_Inventory inventory;
     UI_Map map;
 
@@ -25,7 +25,7 @@ public class UserInterface {
         hud       = new HUD(gp);
         paused    = new UI_Paused(gp);
         actionBar = new UI_ActionBar(gp);
-        equipment = new UI_Equipment(gp);
+        player    = new UI_Player(gp);
         inventory = new UI_Inventory(gp);
         map       = new UI_Map(gp);
     }
@@ -38,7 +38,7 @@ public class UserInterface {
 
             UI_ActionBar.Mode mode = actionBar.getMode();
 
-            if (mode == UI_ActionBar.Mode.EQUIPMENT) equipment.draw(g2);
+            if (mode == UI_ActionBar.Mode.EQUIPMENT) player.draw(g2);
             if (mode == UI_ActionBar.Mode.INVENTORY)  inventory.draw(g2);
             if (mode == UI_ActionBar.Mode.MAP)         map.draw(g2);
 

@@ -17,7 +17,7 @@ public class UI_Nav {
     // =========================================================
     static final int    NAV_X        = 40;
     static final int    NAV_Y        = 130;
-    static final int    NAV_W        = 240;
+    static final int    NAV_W        = 260;
     static final int    NAV_H        = 304;
     static final int    BORDER       = 8;
 
@@ -25,12 +25,13 @@ public class UI_Nav {
     static final int    PANEL_H      = 784;
 
     static final float  FONT_SIZE    = 32f;
-    static final String COLOR_HOVER  = "#e3ddd1";
-    static final String COLOR_IDLE   = "#a29f7e";
-    static final String COLOR_BG     = "#000000";
-    static final String COLOR_BORDER = "#5a5040";
 
-    public static final String[] NAV_ITEMS = { "PLAYER", "INVENTORY", "MAP", "QUEST LOG", "SETTINGS" };
+    static final String COLOR_HOVER  = "#e3ddd1";
+    static final String COLOR_IDLE   = "#4f493b";
+    static final String COLOR_BG     = "#000000";
+    static final String COLOR_BORDER = "#4f493b";
+
+    public static final String[] NAV_ITEMS = { "Player", "Inventory", "Map", "Quest Log", "Settings" };
 
     // =========================================================
 
@@ -174,15 +175,6 @@ public class UI_Nav {
 
         g2.setColor(Color.decode(COLOR_BG));
         g2.fillRect(panelX + BORDER, panelY + BORDER, PANEL_W - BORDER * 2, PANEL_H - BORDER * 2);
-
-        if (font == null) return;
-        g2.setFont(font);
-        g2.setColor(Color.decode(COLOR_IDLE));
-
-        String label = activeIndex >= 0 ? NAV_ITEMS[activeIndex] : "";
-        FontMetrics fm = g2.getFontMetrics();
-        int tx = panelX + (PANEL_W - fm.stringWidth(label)) / 2;
-        int ty = panelY + (PANEL_H + fm.getAscent()) / 2;
-        g2.drawString(label, tx, ty);
     }
+
 }
