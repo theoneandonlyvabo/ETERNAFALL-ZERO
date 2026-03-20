@@ -27,7 +27,7 @@ public class UI_Dialog {
     private static final int    BOX_W            = 856;
     private static final int    BOX_H            = 180;
     private static final int    BORDER_THICKNESS = 8;
-    private static final int    PAD_X            = 25;
+    private static final int    PAD_X            = 32;
     private static final int    PAD_Y            = 25;
     private static final int    TEXT_INDENT      = 192;
     private static final int    BOTTOM_OFFSET    = 40;
