@@ -209,7 +209,6 @@ public class UI_Nav {
     private void drawPanel(Graphics2D g2) {
         g2.setColor(Color.decode(COLOR_BORDER));
         g2.fillRect(panelX, panelY, PANEL_W, PANEL_H);
-
         g2.setColor(Color.decode(COLOR_BG));
         g2.fillRect(panelX + BORDER, panelY + BORDER, PANEL_W - BORDER * 2, PANEL_H - BORDER * 2);
     }

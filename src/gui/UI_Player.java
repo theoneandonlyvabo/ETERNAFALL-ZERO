@@ -23,13 +23,15 @@ public class UI_Player {
     static final int    PANEL_W      = 856;
     static final int    PANEL_H      = 784;
     static final int    BORDER       = 8;
-    static final int    HEADER_H     = 150;
-    static final int    FOOTER_H     = 150;
+    static final int    HEADER_H     = 144;
+    static final int    FOOTER_H     = 144;
     static final int    SLOT_SIZE    = 112;
     static final int    SLOT_BORDER  = 8;
     static final int    PAD          = 30;
+    static final int    PAD_GRID     = 30;  // jarak slot dari divider header/footer (atas & bawah) — adjustable
+    static final int    FONT_GAP     = 8;   // spacing antar baris teks di header/footer
     static final float  FONT_SIZE    = 32f;
-    static final float  FONT_SMALL   = 24f;
+    static final float  FONT_SMALL   = 32f;
 
     // Context panel — sejajar nav
     static final int    CTX_X        = 1236;
@@ -39,10 +41,10 @@ public class UI_Player {
 
     static final String COLOR_BG         = "#000000";
     static final String COLOR_BORDER     = "#4f493b";
-    static final String COLOR_TEXT       = "#696353";   // tipe 1 — nilai dinamis
-    static final String COLOR_TEXT_FIXED = "#4f493b";   // tipe 2 — label fixed
+    static final String COLOR_TEXT       = "#696353";
+    static final String COLOR_TEXT_FIXED = "#4f493b";
     static final String COLOR_TEXT_DIM   = "#4f493b";
-    static final String COLOR_HIGHLIGHT  = "#e3ddd1";   // hovered
+    static final String COLOR_HIGHLIGHT  = "#e3ddd1";
     static final String COLOR_VALUE_TEAL = "#3b6d62";
     static final String COLOR_DIVIDER    = "#4f493b";
 
@@ -56,20 +58,17 @@ public class UI_Player {
     Font font;
     Font fontSmall;
 
-    // State
     public int     col          = 0;
     public int     row          = 0;
     public boolean contextOpen  = false;
     public int     contextIndex = 0;
 
     int panelX, panelY;
-
-    // Shared column reference points — dihitung sekali di constructor
-    // supaya header, grid, dan footer pakai titik tengah yang identik.
     int innerX, innerW, gridMidX;
-    int colLeftMax;   // batas kanan kolom kiri  (value rata ke sini)
-    int colRightLabelX; // awal label kolom kanan
-    int colRightMax;  // batas kanan kolom kanan (value rata ke sini)
+    int colLeftMax;
+    int colRightLabelX;
+    int colRightMax;
+    int gridTop, gridBottom;
 
     public UI_Player(GamePanel gp) {
         this.gp = gp;
@@ -77,14 +76,16 @@ public class UI_Player {
         panelX = (gp.screenWidth  - PANEL_W) / 2;
         panelY = (gp.screenHeight - PANEL_H) / 2;
 
-        // Titik tengah panel inner — sama persis dengan yang dipakai drawGrid
-        innerX      = panelX + BORDER;
-        innerW      = PANEL_W - BORDER * 2;
-        gridMidX    = innerX + innerW / 2;
+        innerX   = panelX + BORDER;
+        innerW   = PANEL_W - BORDER * 2;
+        gridMidX = innerX + innerW / 2;
 
-        colLeftMax      = gridMidX;               // kolom kiri: label di innerX+PAD, value rata ke gridMidX
-        colRightLabelX  = gp.screenWidth / 2 + 10;         // kolom kanan: label mulai di sini
-        colRightMax     = innerX + innerW;        // kolom kanan: value rata ke sini
+        colLeftMax     = gridMidX;
+        colRightLabelX = gp.screenWidth / 2 + 10;
+        colRightMax    = innerX + innerW;
+
+        gridTop    = panelY + BORDER + HEADER_H;
+        gridBottom = panelY + PANEL_H - BORDER - FOOTER_H;
 
         try {
             InputStream is = getClass().getResourceAsStream("/fonts/determination.ttf");
@@ -102,62 +103,38 @@ public class UI_Player {
 
     public void onUp() {
         if (contextOpen) {
-            if (contextIndex > 0) {
-                contextIndex--;
-                playSfxNav();
-            }
+            if (contextIndex > 0) { contextIndex--; playSfxNav(); }
             return;
         }
-        if (row > 0) {
-            row--;
-            playSfxNav();
-        }
+        if (row > 0) { row--; playSfxNav(); }
     }
 
     public void onDown() {
         if (contextOpen) {
-            if (contextIndex < CONTEXT_ITEMS.length - 1) {
-                contextIndex++;
-                playSfxNav();
-            }
+            if (contextIndex < CONTEXT_ITEMS.length - 1) { contextIndex++; playSfxNav(); }
             return;
         }
-        if (row < ROWS - 1) {
-            row++;
-            playSfxNav();
-        }
+        if (row < ROWS - 1) { row++; playSfxNav(); }
     }
 
     public void onLeft() {
         if (contextOpen) return;
-        if (col > 0) {
-            col--;
-            playSfxNav();
-        }
+        if (col > 0) { col--; playSfxNav(); }
     }
 
     public void onRight() {
         if (contextOpen) return;
-        if (col < COLS - 1) {
-            col++;
-            playSfxNav();
-        }
+        if (col < COLS - 1) { col++; playSfxNav(); }
     }
 
     public void onConfirm() {
-        if (contextOpen) {
-            handleContextConfirm();
-            return;
-        }
+        if (contextOpen) { handleContextConfirm(); return; }
         contextOpen  = true;
         contextIndex = 0;
     }
 
     public void onCancel() {
-        if (contextOpen) {
-            contextOpen = false;
-            return;
-        }
+        if (contextOpen) { contextOpen = false; }
     }
 
     public void reset() {
@@ -174,7 +151,6 @@ public class UI_Player {
     private void handleContextConfirm() {
         switch (CONTEXT_ITEMS[contextIndex]) {
             case "Cancel" -> contextOpen = false;
-            // Examine, Switch, Drop — TODO
         }
     }
 
@@ -238,56 +214,58 @@ public class UI_Player {
         if (font == null) return;
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 
-        int contentY = panelY + BORDER + HEADER_H;
-        int gridH    = PANEL_H - BORDER * 2 - HEADER_H - FOOTER_H;
-
         drawHeader(g2);
-        drawGrid(g2, contentY, gridH);
+        drawGrid(g2);
         drawFooter(g2);
         if (contextOpen) drawContext(g2);
     }
 
     // ── Header ──────────────────────────────────────────────
     private void drawHeader(Graphics2D g2) {
-        int x = innerX;
-        int y = panelY + BORDER;
+        int x        = innerX;
+        int y        = panelY + BORDER;
+        int contentH = HEADER_H - BORDER;
 
-        // Divider bawah header
         g2.setColor(Color.decode(COLOR_DIVIDER));
-        g2.fillRect(x, y + HEADER_H - BORDER, innerW, BORDER);
+        g2.fillRect(x, y + contentH, innerW, BORDER);
 
         g2.setFont(font);
         FontMetrics fm = g2.getFontMetrics();
-        int lineH = fm.getHeight() + 8;
-        int textY = y + (HEADER_H - BORDER - lineH * 2) / 2 + fm.getAscent();
 
-        // Kolom kiri — Level & Experience
+        int blockH = fm.getAscent() + fm.getDescent() + FONT_GAP + fm.getAscent() + fm.getDescent();
+        int startY = y + (contentH - blockH) / 2 + fm.getAscent();
+        int line2Y = startY + fm.getAscent() + fm.getDescent() + FONT_GAP;
+
         int level = gp.player.level;
         int exp   = gp.player.exp;
         int need  = expThreshold(level);
-        drawLabelValue(g2, fm, "Level",      String.valueOf(level),        x + PAD, colLeftMax, textY);
-        drawLabelValue(g2, fm, "Experience", "(" + exp + "/" + need + ")", x + PAD, colLeftMax, textY + lineH);
+        drawLabelValue(g2, fm, "Level",      String.valueOf(level),        x + PAD, colLeftMax, startY);
+        drawLabelValue(g2, fm, "Experience", "(" + exp + "/" + need + ")", x + PAD, colLeftMax, line2Y);
 
-        // Kolom kanan — Health & Power
         int hp    = gp.player.getTotalMaxHp();
         int power = getDamageMax();
-        drawLabelValue(g2, fm, "Health", formatNumber(hp),      colRightLabelX, colRightMax, textY);
-        drawLabelValue(g2, fm, "Power",  String.valueOf(power), colRightLabelX, colRightMax, textY + lineH);
+        drawLabelValue(g2, fm, "Health", formatNumber(hp),      colRightLabelX, colRightMax, startY);
+        drawLabelValue(g2, fm, "Power",  String.valueOf(power), colRightLabelX, colRightMax, line2Y);
     }
 
     // ── Grid ────────────────────────────────────────────────
-    private void drawGrid(Graphics2D g2, int startY, int gridH) {
-        int gridTop    = startY + 20;
-        int gridBottom = startY + gridH - 20;
-        int usableH    = gridBottom - gridTop;
-        int rowH       = usableH / ROWS;
+    private void drawGrid(Graphics2D g2) {
+        // Usable area setelah PAD_GRID atas dan bawah
+        int usableH = (gridBottom - gridTop) - PAD_GRID * 2;
+        // Gap antar slot: sisa ruang setelah semua slot dibagi (ROWS-1) celah
+        int totalSlotH = SLOT_SIZE * ROWS;
+        int slotGap    = (usableH - totalSlotH) / (ROWS - 1);
+
+        int areaX  = innerX + PAD;
+        int areaY  = gridTop + PAD_GRID;
+        int areaW  = innerW - PAD * 2;
+        int halfW  = areaW / 2;
 
         for (int c = 0; c < COLS; c++) {
             for (int r = 0; r < ROWS; r++) {
-                int slotX = (c == 0) ? innerX + PAD : gridMidX + 10;
-                int slotY = gridTop + r * rowH + (rowH - SLOT_SIZE) / 2;
-                boolean hov = (c == col && r == row);
-                drawSlot(g2, slotX, slotY, c, r, hov);
+                int slotX = (c == 0) ? areaX : areaX + halfW + 10;
+                int slotY = areaY + r * (SLOT_SIZE + slotGap);
+                drawSlot(g2, slotX, slotY, c, r, c == col && r == row);
             }
         }
     }
@@ -303,8 +281,11 @@ public class UI_Player {
 
         // TODO: draw item sprite
 
+        int areaX    = innerX + PAD;
+        int areaW    = innerW - PAD * 2;
+        int halfW    = areaW / 2;
         int textX    = x + SLOT_SIZE + PAD;
-        int maxRight = (c == 0) ? gridMidX - PAD : colRightMax - PAD;
+        int maxRight = (c == 0) ? areaX + halfW - PAD : areaX + areaW;
         int maxW     = maxRight - textX;
         int centerY  = y + SLOT_SIZE / 2;
 
@@ -329,36 +310,27 @@ public class UI_Player {
                 drawStringFit(g2, fms, lvReq, textX, baseY + fm.getHeight() + 4, maxW);
                 g2.setFont(font);
             } else {
-                String[] words = name.split(" ");
-                String line1 = "", line2 = "";
-                int bestSplit = -1;
+                String[] words     = name.split(" ");
+                String   line1     = name, line2 = "";
+                int      bestSplit = -1;
 
                 for (int i = 1; i < words.length; i++) {
                     String l1 = String.join(" ", java.util.Arrays.copyOfRange(words, 0, i));
                     String l2 = String.join(" ", java.util.Arrays.copyOfRange(words, i, words.length));
-                    if (fm.stringWidth(l1) <= maxW) {
-                        bestSplit = i;
-                        line1 = l1;
-                        line2 = l2;
-                    }
+                    if (fm.stringWidth(l1) <= maxW) { bestSplit = i; line1 = l1; line2 = l2; }
                 }
+                if (bestSplit == -1) line2 = "";
 
-                if (bestSplit == -1) {
-                    line1 = name;
-                    line2 = "";
-                }
-
-                boolean twoLines  = !line2.isEmpty();
-                int lh            = fm.getHeight();
-                int nameBlockH    = twoLines ? lh * 2 + 2 : lh;
-                int totalH        = nameBlockH + 4 + (int) FONT_SMALL;
-                int startY        = centerY - totalH / 2 + fm.getAscent();
+                boolean twoLines = !line2.isEmpty();
+                int lh     = fm.getHeight();
+                int nameH  = twoLines ? lh * 2 + 2 : lh;
+                int totalH = nameH + 4 + (int) FONT_SMALL;
+                int startY = centerY - totalH / 2 + fm.getAscent();
 
                 g2.setColor(Color.decode(color));
                 drawStringFit(g2, fm, line1, textX, startY, maxW);
-                if (twoLines) {
-                    drawStringFit(g2, fm, line2, textX, startY + lh + 2, maxW);
-                }
+                if (twoLines) drawStringFit(g2, fm, line2, textX, startY + lh + 2, maxW);
+
                 g2.setFont(fontSmall);
                 FontMetrics fms = g2.getFontMetrics();
                 g2.setColor(Color.decode(COLOR_TEXT_DIM));
@@ -385,47 +357,50 @@ public class UI_Player {
 
     // ── Footer ──────────────────────────────────────────────
     private void drawFooter(Graphics2D g2) {
-        int x = innerX;
-        int y = panelY + PANEL_H - BORDER - FOOTER_H;
+        int x        = innerX;
+        int dividerY = gridBottom;
+        int contentH = FOOTER_H - BORDER;
 
         g2.setColor(Color.decode(COLOR_DIVIDER));
-        g2.fillRect(x, y, innerW, BORDER);
+        g2.fillRect(x, dividerY, innerW, BORDER);
 
         Item   item = getSlotItem(col, row);
         String slot = getSlotLabel(col, row);
 
         g2.setFont(font);
         FontMetrics fm = g2.getFontMetrics();
-        int lineH = fm.getHeight() + 8;
-        int textY = y + BORDER + (FOOTER_H - lineH * 2) / 2 + fm.getAscent();
+
+        int blockH = fm.getAscent() + fm.getDescent() + FONT_GAP + fm.getAscent() + fm.getDescent();
+        int startY = dividerY + BORDER + (contentH - blockH) / 2 + fm.getAscent();
+        int line2Y = startY + fm.getAscent() + fm.getDescent() + FONT_GAP;
 
         if (item == null) {
-            drawLabelValueColored(g2, fm, "Level",    "N/A",             x + PAD,        colLeftMax,    textY,         COLOR_TEXT_FIXED, COLOR_TEXT_DIM);
-            drawLabelValueColored(g2, fm, "Value",    "N/A",             x + PAD,        colLeftMax,    textY + lineH, COLOR_TEXT_FIXED, COLOR_TEXT_DIM);
-            drawLabelValueColored(g2, fm, "Category", getSlotLabel(col, row), colRightLabelX, colRightMax, textY,         COLOR_TEXT_FIXED, COLOR_TEXT);
-            drawLabelValueColored(g2, fm, "Defense",  "N/A",             colRightLabelX, colRightMax,   textY + lineH, COLOR_TEXT_FIXED, COLOR_TEXT_DIM);
+            drawLabelValueColored(g2, fm, "Level",    "N/A",                  x + PAD, colLeftMax,          startY, COLOR_TEXT_FIXED, COLOR_TEXT_DIM);
+            drawLabelValueColored(g2, fm, "Value",    "N/A",                  x + PAD, colLeftMax,          line2Y, COLOR_TEXT_FIXED, COLOR_TEXT_DIM);
+            drawLabelValueColored(g2, fm, "Category", getSlotLabel(col, row), colRightLabelX, colRightMax,  startY, COLOR_TEXT_FIXED, COLOR_TEXT);
+            drawLabelValueColored(g2, fm, "Defense",  "N/A",                  colRightLabelX, colRightMax,  line2Y, COLOR_TEXT_FIXED, COLOR_TEXT_DIM);
         } else if (item instanceof Armor a) {
-            drawLabelValue(g2, fm, "Level",    levelReqLabel(item),       x + PAD,        colLeftMax,    textY);
-            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value), x + PAD,     colLeftMax,    textY + lineH, COLOR_TEXT, COLOR_VALUE_TEAL);
-            drawLabelValue(g2, fm, "Category", slot,                      colRightLabelX, colRightMax,   textY);
-            drawLabelValue(g2, fm, "Defense",  String.valueOf(a.hpBonus), colRightLabelX, colRightMax,   textY + lineH);
+            drawLabelValue(g2, fm, "Level",    levelReqLabel(item),           x + PAD, colLeftMax,         startY);
+            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),  x + PAD, colLeftMax,         line2Y, COLOR_TEXT, COLOR_VALUE_TEAL);
+            drawLabelValue(g2, fm, "Category", slot,                          colRightLabelX, colRightMax,  startY);
+            drawLabelValue(g2, fm, "Defense",  String.valueOf(a.hpBonus),     colRightLabelX, colRightMax,  line2Y);
         } else if (item instanceof Armament arm) {
             String power   = String.valueOf(getDamageMaxFor(arm));
             String weaponT = capitalize(arm.armamentType.name());
-            drawLabelValue(g2, fm, "Level",    levelReqLabel(item),       x + PAD,        colLeftMax,    textY);
-            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value), x + PAD,     colLeftMax,    textY + lineH, COLOR_TEXT, COLOR_VALUE_TEAL);
-            drawLabelValue(g2, fm, "Category", weaponT,                   colRightLabelX, colRightMax,   textY);
-            drawLabelValue(g2, fm, "Power",    power,                     colRightLabelX, colRightMax,   textY + lineH);
+            drawLabelValue(g2, fm, "Level",    levelReqLabel(item),           x + PAD, colLeftMax,         startY);
+            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),  x + PAD, colLeftMax,         line2Y, COLOR_TEXT, COLOR_VALUE_TEAL);
+            drawLabelValue(g2, fm, "Category", weaponT,                       colRightLabelX, colRightMax,  startY);
+            drawLabelValue(g2, fm, "Power",    power,                         colRightLabelX, colRightMax,  line2Y);
         } else if (item instanceof Relic rel) {
-            drawLabelValue(g2, fm, "Level",    levelReqLabel(item),        x + PAD,        colLeftMax,    textY);
-            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value), x + PAD,      colLeftMax,    textY + lineH, COLOR_TEXT, COLOR_VALUE_TEAL);
-            drawLabelValue(g2, fm, "Category", "Relic",                    colRightLabelX, colRightMax,   textY);
-            drawLabelValue(g2, fm, "Effect",   rel.passiveEffect,          colRightLabelX, colRightMax,   textY + lineH);
+            drawLabelValue(g2, fm, "Level",    levelReqLabel(item),           x + PAD, colLeftMax,         startY);
+            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),  x + PAD, colLeftMax,         line2Y, COLOR_TEXT, COLOR_VALUE_TEAL);
+            drawLabelValue(g2, fm, "Category", "Relic",                       colRightLabelX, colRightMax,  startY);
+            drawLabelValue(g2, fm, "Effect",   rel.passiveEffect,             colRightLabelX, colRightMax,  line2Y);
         } else if (item instanceof Accessory acc) {
-            drawLabelValue(g2, fm, "Level",     levelReqLabel(item),           x + PAD,        colLeftMax,    textY);
-            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),   x + PAD,        colLeftMax,    textY + lineH, COLOR_TEXT, COLOR_VALUE_TEAL);
-            drawLabelValue(g2, fm, "HP Bonus",  "x" + acc.hpMultiplier,       colRightLabelX, colRightMax,   textY);
-            drawLabelValue(g2, fm, "Dmg Bonus", "x" + acc.damageMultiplier,   colRightLabelX, colRightMax,   textY + lineH);
+            drawLabelValue(g2, fm, "Level",     levelReqLabel(item),              x + PAD, colLeftMax,         startY);
+            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),      x + PAD, colLeftMax,         line2Y, COLOR_TEXT, COLOR_VALUE_TEAL);
+            drawLabelValue(g2, fm, "HP Bonus",  "x" + acc.hpMultiplier,          colRightLabelX, colRightMax,  startY);
+            drawLabelValue(g2, fm, "Dmg Bonus", "x" + acc.damageMultiplier,      colRightLabelX, colRightMax,  line2Y);
         }
     }
 
@@ -436,11 +411,11 @@ public class UI_Player {
         g2.fillRect(CTX_X + BORDER, CTX_Y + BORDER, CTX_W - BORDER * 2, CTX_H - BORDER * 2);
 
         g2.setFont(font);
-        FontMetrics fm = g2.getFontMetrics();
-        int itemH     = fm.getHeight() + 12;
-        int navTotalH = itemH * 5 - 12;
-        int innerCtxX = CTX_X + BORDER + 16;
-        int innerCtxY = CTX_Y + (CTX_H - navTotalH) / 2 + fm.getAscent();
+        FontMetrics fm  = g2.getFontMetrics();
+        int itemH       = fm.getHeight() + 12;
+        int navTotalH   = itemH * CONTEXT_ITEMS.length - 12;
+        int innerCtxX   = CTX_X + BORDER + 16;
+        int innerCtxY   = CTX_Y + (CTX_H - navTotalH) / 2 + fm.getAscent();
 
         for (int i = 0; i < CONTEXT_ITEMS.length; i++) {
             g2.setColor(i == contextIndex
@@ -491,10 +466,6 @@ public class UI_Player {
         return s.charAt(0) + s.substring(1).toLowerCase();
     }
 
-    /**
-     * Placeholder — ganti formula ini waktu sistem XP diimplementasi.
-     * Sekarang: tiap level butuh level * 100 XP.
-     */
     private int expThreshold(int level) {
         return level * 100;
     }
@@ -509,5 +480,4 @@ public class UI_Player {
         float multi = gp.player.accessory != null ? gp.player.accessory.damageMultiplier : 1.0f;
         return (int)(arm.getDamage() * multi);
     }
-
 }
