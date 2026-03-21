@@ -28,15 +28,16 @@ public class UI_Inventory {
     static final int    PANEL_W      = 856;
     static final int    PANEL_H      = 784;
     static final int    BORDER       = 8;
-    static final int    HEADER_H     = 80;
+    static final int    HEADER_H     = 108;
     static final int    FOOTER_H     = 150;
     static final int    PAD          = 30;
+    static final int    FONT_GAP     = 8;   // spacing antar baris teks di footer — mirror UI_Player
     static final int    CELL_W       = 240;
     static final int    CELL_H       = 72;
     static final int    CELL_GAP     = 30;
     static final int    COLS         = 3;
     static final float  FONT_SIZE    = 32f;
-    static final float  FONT_SMALL   = 32f;
+    static final float  FONT_SMALL   = 24f;
 
     static final String COLOR_BG         = "#000000";
     static final String COLOR_BORDER     = "#4f493b";
@@ -410,45 +411,47 @@ public class UI_Inventory {
         Item item = (focus >= 1) ? getSelectedItem(items) : null;
 
         g2.setFont(font);
-        FontMetrics fm   = g2.getFontMetrics();
-        int lineH        = fm.getHeight() + 8;
-        int footerTextY  = y + BORDER + (FOOTER_H - BORDER - lineH * 2) / 2 + fm.getAscent();
+        FontMetrics fm  = g2.getFontMetrics();
+        int contentH    = FOOTER_H - BORDER;
+        int blockH      = fm.getAscent() + fm.getDescent() + FONT_GAP + fm.getAscent() + fm.getDescent();
+        int footerTextY = y + BORDER + (contentH - blockH) / 2 + fm.getAscent();
+        int line2Y      = footerTextY + fm.getAscent() + fm.getDescent() + FONT_GAP;
 
         if (item == null) {
             drawLabelValueColored(g2, fm, "Level",    "N/A", x + PAD,        colLeftMax,    footerTextY,         COLOR_TEXT_FIXED, COLOR_TEXT_DIM);
-            drawLabelValueColored(g2, fm, "Value",    "N/A", x + PAD,        colLeftMax,    footerTextY + lineH, COLOR_TEXT_FIXED, COLOR_TEXT_DIM);
+            drawLabelValueColored(g2, fm, "Value",    "N/A", x + PAD,        colLeftMax,    line2Y, COLOR_TEXT_FIXED, COLOR_TEXT_DIM);
             drawLabelValueColored(g2, fm, "Category", "N/A", colRightLabelX, colRightMax,   footerTextY,         COLOR_TEXT_FIXED, COLOR_TEXT_DIM);
-            drawLabelValueColored(g2, fm, "Stat",     "N/A", colRightLabelX, colRightMax,   footerTextY + lineH, COLOR_TEXT_FIXED, COLOR_TEXT_DIM);
+            drawLabelValueColored(g2, fm, "Stat",     "N/A", colRightLabelX, colRightMax,   line2Y, COLOR_TEXT_FIXED, COLOR_TEXT_DIM);
         } else if (item instanceof Armor a) {
             drawLabelValue(g2, fm, "Level",    String.valueOf(item.levelReq),           x + PAD,        colLeftMax,  footerTextY);
-            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),            x + PAD,        colLeftMax,  footerTextY + lineH, COLOR_TEXT, COLOR_VALUE_TEAL);
+            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),            x + PAD,        colLeftMax,  line2Y, COLOR_TEXT, COLOR_VALUE_TEAL);
             drawLabelValue(g2, fm, "Category", "Armor",                                 colRightLabelX, colRightMax, footerTextY);
-            drawLabelValue(g2, fm, "Defense",  String.valueOf(a.hpBonus),               colRightLabelX, colRightMax, footerTextY + lineH);
+            drawLabelValue(g2, fm, "Defense",  String.valueOf(a.hpBonus),               colRightLabelX, colRightMax, line2Y);
         } else if (item instanceof Armament arm) {
             drawLabelValue(g2, fm, "Level",    String.valueOf(item.levelReq),           x + PAD,        colLeftMax,  footerTextY);
-            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),            x + PAD,        colLeftMax,  footerTextY + lineH, COLOR_TEXT, COLOR_VALUE_TEAL);
+            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),            x + PAD,        colLeftMax,  line2Y, COLOR_TEXT, COLOR_VALUE_TEAL);
             drawLabelValue(g2, fm, "Category", capitalize(arm.armamentType.name()),     colRightLabelX, colRightMax, footerTextY);
-            drawLabelValue(g2, fm, "Power",    String.valueOf(arm.getDamage()),         colRightLabelX, colRightMax, footerTextY + lineH);
+            drawLabelValue(g2, fm, "Power",    String.valueOf(arm.getDamage()),         colRightLabelX, colRightMax, line2Y);
         } else if (item instanceof Relic rel) {
             drawLabelValue(g2, fm, "Level",    String.valueOf(item.levelReq),           x + PAD,        colLeftMax,  footerTextY);
-            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),            x + PAD,        colLeftMax,  footerTextY + lineH, COLOR_TEXT, COLOR_VALUE_TEAL);
+            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),            x + PAD,        colLeftMax,  line2Y, COLOR_TEXT, COLOR_VALUE_TEAL);
             drawLabelValue(g2, fm, "Category", "Relic",                                 colRightLabelX, colRightMax, footerTextY);
-            drawLabelValue(g2, fm, "Effect",   rel.passiveEffect,                       colRightLabelX, colRightMax, footerTextY + lineH);
+            drawLabelValue(g2, fm, "Effect",   rel.passiveEffect,                       colRightLabelX, colRightMax, line2Y);
         } else if (item instanceof Accessory acc) {
             drawLabelValue(g2, fm, "Level",    String.valueOf(item.levelReq),           x + PAD,        colLeftMax,  footerTextY);
-            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),            x + PAD,        colLeftMax,  footerTextY + lineH, COLOR_TEXT, COLOR_VALUE_TEAL);
+            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),            x + PAD,        colLeftMax,  line2Y, COLOR_TEXT, COLOR_VALUE_TEAL);
             drawLabelValue(g2, fm, "Category", "Accessory",                             colRightLabelX, colRightMax, footerTextY);
-            drawLabelValue(g2, fm, "Buff",     acc.description,                         colRightLabelX, colRightMax, footerTextY + lineH);
+            drawLabelValue(g2, fm, "Buff",     acc.description,                         colRightLabelX, colRightMax, line2Y);
         } else if (item instanceof Consumable con) {
             drawLabelValue(g2, fm, "Level",   String.valueOf(item.levelReq),            x + PAD,        colLeftMax,  footerTextY);
-            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),            x + PAD,        colLeftMax,  footerTextY + lineH, COLOR_TEXT, COLOR_VALUE_TEAL);
+            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),            x + PAD,        colLeftMax,  line2Y, COLOR_TEXT, COLOR_VALUE_TEAL);
             drawLabelValue(g2, fm, "Effects", con.effect,                               colRightLabelX, colRightMax, footerTextY);
-            drawLabelValue(g2, fm, "Amount",  String.valueOf(con.quantity),             colRightLabelX, colRightMax, footerTextY + lineH);
+            drawLabelValue(g2, fm, "Amount",  String.valueOf(con.quantity),             colRightLabelX, colRightMax, line2Y);
         } else if (item instanceof KeyItem) {
             drawLabelValue(g2, fm, "Level",   String.valueOf(item.levelReq),            x + PAD,        colLeftMax,  footerTextY);
-            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),            x + PAD,        colLeftMax,  footerTextY + lineH, COLOR_TEXT, COLOR_VALUE_TEAL);
+            drawLabelValueColored(g2, fm, "Value", formatNumber(item.value),            x + PAD,        colLeftMax,  line2Y, COLOR_TEXT, COLOR_VALUE_TEAL);
             drawLabelValue(g2, fm, "Effects", item.description,                         colRightLabelX, colRightMax, footerTextY);
-            drawLabelValue(g2, fm, "Amount",  "1",                                      colRightLabelX, colRightMax, footerTextY + lineH);
+            drawLabelValue(g2, fm, "Amount",  "1",                                      colRightLabelX, colRightMax, line2Y);
         }
     }
 
