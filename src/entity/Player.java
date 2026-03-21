@@ -35,6 +35,7 @@ public class Player extends Entity {
     public int currentHp;
     public final int baseDamage = BASE_DAMAGE;
     public int witherShards;
+    public int exp;
 
     // -------------------------
     // Equipment Slots
@@ -84,6 +85,7 @@ public class Player extends Entity {
         maxHp        = BASE_HP + (HP_PER_LEVEL * (level - 1));
         currentHp    = (DEBUG_HP >= 0) ? DEBUG_HP : maxHp;
         witherShards = 0;
+        exp          = 0;
 
         headpiece  = null;
         chestpiece = null;
@@ -120,6 +122,7 @@ public class Player extends Entity {
         level++;
         maxHp    += HP_PER_LEVEL;
         currentHp = getTotalMaxHp();
+        exp       = 0;
     }
 
     public void getImage() {

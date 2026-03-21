@@ -16,10 +16,15 @@ public class UI_Nav {
     // CONFIG
     // =========================================================
     static final int    NAV_X        = 40;
-    static final int    NAV_Y        = 130;
+    static final int    NAV_Y        = 140;
     static final int    NAV_W        = 260;
     static final int    NAV_H        = 304;
     static final int    BORDER       = 8;
+
+    static final int    SHARDS_X     = 40;
+    static final int    SHARDS_Y     = 40;
+    static final int    SHARDS_W     = 260;
+    static final int    SHARDS_H     = 80;
 
     static final int    PANEL_W      = 856;
     static final int    PANEL_H      = 784;
@@ -30,8 +35,9 @@ public class UI_Nav {
     static final String COLOR_IDLE   = "#4f493b";
     static final String COLOR_BG     = "#000000";
     static final String COLOR_BORDER = "#4f493b";
+    static final String COLOR_SHARDS = "#5aaa7a"; // teal-green for shard count
 
-    public static final String[] NAV_ITEMS = { "Player", "Inventory", "Map", "Quest Log", "Settings" };
+    public static final String[] NAV_ITEMS = { "Player", "Inventory", "Map", "Quest Log", "Cancel" };
 
     // =========================================================
 
@@ -96,6 +102,11 @@ public class UI_Nav {
 
     public void onConfirm() {
         if (!navOpen || panelOpen) return;
+        // "Cancel" is the last item — treat as close
+        if (hoverIndex == NAV_ITEMS.length - 1) {
+            closeAll();
+            return;
+        }
         openPanel(hoverIndex);
     }
 
@@ -144,24 +155,50 @@ public class UI_Nav {
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 
         if (panelOpen) drawPanel(g2);
+        drawShards(g2);
         drawNav(g2);
     }
 
+    private void drawShards(Graphics2D g2) {
+        // border fill
+        g2.setColor(Color.decode(COLOR_BORDER));
+        g2.fillRect(SHARDS_X, SHARDS_Y, SHARDS_W, SHARDS_H);
+
+        // bg fill
+        g2.setColor(Color.decode(COLOR_BG));
+        g2.fillRect(SHARDS_X + BORDER, SHARDS_Y + BORDER, SHARDS_W - BORDER * 2, SHARDS_H - BORDER * 2);
+
+        if (font == null) return;
+        g2.setFont(font);
+        FontMetrics fm = g2.getFontMetrics();
+
+        int innerY   = SHARDS_Y + (SHARDS_H + fm.getAscent() - fm.getDescent()) / 2;
+        int rightEdge = SHARDS_X + SHARDS_W - BORDER - 16;
+
+        // shard count — right-aligned
+        String shardsText = String.valueOf(gp.player.witherShards);
+        int textW = fm.stringWidth(shardsText);
+        g2.setColor(Color.decode(COLOR_SHARDS));
+        g2.drawString(shardsText, rightEdge - textW, innerY);
+    }
+
     private void drawNav(Graphics2D g2) {
+        // border fill
         g2.setColor(Color.decode(COLOR_BORDER));
         g2.fillRect(NAV_X, NAV_Y, NAV_W, NAV_H);
 
+        // bg fill
         g2.setColor(Color.decode(COLOR_BG));
         g2.fillRect(NAV_X + BORDER, NAV_Y + BORDER, NAV_W - BORDER * 2, NAV_H - BORDER * 2);
 
         if (font == null) return;
         g2.setFont(font);
 
-        FontMetrics fm = g2.getFontMetrics();
-        int itemH      = fm.getHeight() + 12;
-        int totalH     = itemH * NAV_ITEMS.length - 12; // tanpa gap di bawah item terakhir
-        int innerX     = NAV_X + BORDER + 16;
-        int innerY     = NAV_Y + (NAV_H - totalH) / 2 + fm.getAscent();
+        FontMetrics fm  = g2.getFontMetrics();
+        int itemH       = fm.getHeight() + 12;
+        int totalH      = itemH * NAV_ITEMS.length - 12;
+        int innerX      = NAV_X + BORDER + 16;
+        int innerY      = NAV_Y + (NAV_H - totalH) / 2 + fm.getAscent();
 
         for (int i = 0; i < NAV_ITEMS.length; i++) {
             g2.setColor(i == hoverIndex ? Color.decode(COLOR_HOVER) : Color.decode(COLOR_IDLE));
