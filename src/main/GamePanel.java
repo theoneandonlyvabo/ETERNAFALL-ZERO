@@ -47,21 +47,18 @@ public class GamePanel extends Canvas implements Runnable {
     int FPS = 60;
 
     // SYSTEM
-    TileManager tileM = new TileManager(this);
-    KeyHandler keyH = new KeyHandler(this);
+    TileManager tileManager = new TileManager(this);
+    KeyHandler keyHandler = new KeyHandler(this);
     public Sound music = new Sound();
-    public Sound SFX = new Sound();
-    public CollisionChecker cChecker = new CollisionChecker(this);
-    public AssetSetter aSetter = new AssetSetter(this);
-    public InteractionManager interactionM = new InteractionManager(this);
+    public Sound sfx = new Sound();
+    public CollisionChecker collisionChecker = new CollisionChecker(this);
+    public AssetSetter assetSetter = new AssetSetter(this);
+    public InteractionManager interactionManager = new InteractionManager(this);
     public ItemManager itemManager = new ItemManager();
     Thread gameThread;
 
     // GAME STATE
-    public int gameState;
-    public static final int pausedState = 0;
-    public static final int worldState  = 1;
-    public static final int battleState = 2;
+    public GameState gameState;
 
     // UI
     public UserInterface ui = new UserInterface(this);
@@ -75,12 +72,12 @@ public class GamePanel extends Canvas implements Runnable {
     public BattleManager battleManager = new BattleManager(this);
 
     // ENTITY AND OBJECT
-    public Player player = new Player(this, keyH);
+    public Player player = new Player(this, keyHandler);
     public ObjectManager obj[] = new ObjectManager[10];
     public Entity npc[] = new Entity[30];
 
     // Y-SORTING LIST
-    ArrayList<Object> entityList = new ArrayList<>();
+    ArrayList<Object> renderList = new ArrayList<>();
 
     // DEBUG
     public double delta = 0;
@@ -92,7 +89,7 @@ public class GamePanel extends Canvas implements Runnable {
 
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
-        this.addKeyListener(keyH);
+        this.addKeyListener(keyHandler);
         this.setFocusable(true);
         this.setFocusTraversalKeysEnabled(false);
 
@@ -100,12 +97,12 @@ public class GamePanel extends Canvas implements Runnable {
 
     public void setupGame() {
 
-        aSetter.setObject();
-        aSetter.setNPC();
-        playSFX(2);
+        assetSetter.setObject();
+        assetSetter.setNPC();
+        playSfx(2);
         playMusic(0);
         playMusic(1);
-        gameState = worldState;
+        gameState = GameState.WORLD;
 
     }
 
@@ -134,13 +131,13 @@ public class GamePanel extends Canvas implements Runnable {
             long elapsed = currentTime - lastTime;
             lastTime = currentTime;
 
-            if (gameState != pausedState) {
+            if (gameState != GameState.PAUSED) {
                 delta += elapsed / drawInterval;
                 timer += elapsed;
                 if (!fading) gameTimer += elapsed;
             }
 
-            if (gameState != pausedState) {
+            if (gameState != GameState.PAUSED) {
                 while (delta >= 1) {
                     update();
                     delta--;
@@ -173,20 +170,20 @@ public class GamePanel extends Canvas implements Runnable {
 
     public void update() {
 
-        if (gameState == worldState && !fading && !nav.isOpen() && !dialogManager.isActive) {
+        if (gameState == GameState.WORLD && !fading && !nav.isOpen() && !dialogManager.isActive) {
             player.update();
             itemManager.update(1f / FPS);
         }
 
-        if (gameState == worldState && !fading && !nav.isOpen()) {
-            interactionM.update();
+        if (gameState == GameState.WORLD && !fading && !nav.isOpen()) {
+            interactionManager.update();
         }
 
         if (dialogManager.isActive) {
             dialogUI.update();
         }
 
-        if (gameState == battleState) {
+        if (gameState == GameState.BATTLE) {
             // TODO: battleUI.update() dipanggil di sini setelah UI_Battle dibuat
         }
 
@@ -209,26 +206,26 @@ public class GamePanel extends Canvas implements Runnable {
         g2.fillRect(0, 0, screenWidth, screenHeight);
 
         long drawStart = 0;
-        if (keyH.checkDrawTime) {
+        if (keyHandler.checkDrawTime) {
             drawStart = System.nanoTime();
         }
 
-        if (gameState == worldState || gameState == pausedState) {
+        if (gameState == GameState.WORLD || gameState == GameState.PAUSED) {
 
             // Tile
-            tileM.draw(g2);
+            tileManager.draw(g2);
 
             // Y-Sorting
-            entityList.clear();
-            entityList.add(player);
+            renderList.clear();
+            renderList.add(player);
             for (int i = 0; i < obj.length; i++) {
-                if (obj[i] != null) entityList.add(obj[i]);
+                if (obj[i] != null) renderList.add(obj[i]);
             }
             for (int i = 0; i < npc.length; i++) {
-                if (npc[i] != null) entityList.add(npc[i]);
+                if (npc[i] != null) renderList.add(npc[i]);
             }
 
-            Collections.sort(entityList, new Comparator<Object>() {
+            Collections.sort(renderList, new Comparator<Object>() {
                 @Override
                 public int compare(Object o1, Object o2) {
                     int y1 = 0, y2 = 0;
@@ -240,7 +237,7 @@ public class GamePanel extends Canvas implements Runnable {
                 }
             });
 
-            for (Object renderObj : entityList) {
+            for (Object renderObj : renderList) {
                 if (renderObj instanceof Entity) ((Entity) renderObj).draw(g2);
                 else if (renderObj instanceof ObjectManager) ((ObjectManager) renderObj).draw(g2, this);
             }
@@ -249,7 +246,7 @@ public class GamePanel extends Canvas implements Runnable {
             ui.draw(g2);
 
             // Interaction prompt
-            interactionM.draw(g2);
+            interactionManager.draw(g2);
 
             // Navbar
             nav.draw(g2);
@@ -259,12 +256,12 @@ public class GamePanel extends Canvas implements Runnable {
 
         }
 
-        if (gameState == battleState) {
+        if (gameState == GameState.BATTLE) {
             // TODO: battleUI.draw(g2) dipanggil di sini setelah UI_Battle dibuat
         }
 
         // Debug HUD
-        if (keyH.checkDrawTime) {
+        if (keyHandler.checkDrawTime) {
             long drawEnd = System.nanoTime();
             long passed = drawEnd - drawStart;
 
@@ -331,10 +328,10 @@ public class GamePanel extends Canvas implements Runnable {
 
     }
 
-    public void playSFX(int i) {
+    public void playSfx(int i) {
 
-        SFX.setFile(i);
-        SFX.play(i);
+        sfx.setFile(i);
+        sfx.play(i);
 
     }
 

@@ -155,8 +155,8 @@ public class UI_Player {
     }
 
     private void playSfxNav() {
-        gp.SFX.setFile(3);
-        gp.SFX.play(3);
+        gp.sfx.setFile(3);
+        gp.sfx.play(3);
     }
 
     private Item getSlotItem(int c, int r) {

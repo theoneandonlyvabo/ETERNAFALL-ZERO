@@ -126,13 +126,13 @@ public class KeyHandler implements KeyListener {
         if (code == KEY_INTERACT) interactPressed = true;
 
         if (code == KEY_NAV) {
-            if (!isMoving() && gp.gameState == GamePanel.worldState && !gp.dialogManager.isActive) {
+            if (!isMoving() && gp.gameState == GameState.WORLD && !gp.dialogManager.isActive) {
                 gp.nav.onTab();
             }
             return;
         }
 
-        if (!isMoving() && gp.gameState == GamePanel.worldState) {
+        if (!isMoving() && gp.gameState == GameState.WORLD) {
             if (code == KEY_PLAYER)    { gp.nav.onShortcut(NAV_PLAYER);    return; }
             if (code == KEY_INVENTORY) { gp.nav.onShortcut(NAV_INVENTORY); return; }
             if (code == KEY_MAP)       { gp.nav.onShortcut(NAV_MAP);       return; }
@@ -140,12 +140,12 @@ public class KeyHandler implements KeyListener {
         }
 
         if (code == KEY_PAUSE) {
-            if (gp.gameState == GamePanel.worldState) {
-                gp.gameState = GamePanel.pausedState;
+            if (gp.gameState == GameState.WORLD) {
+                gp.gameState = GameState.PAUSED;
                 gp.music.pauseAll();
                 gp.delta = 0;
-            } else if (gp.gameState == GamePanel.pausedState) {
-                gp.gameState = GamePanel.worldState;
+            } else if (gp.gameState == GameState.PAUSED) {
+                gp.gameState = GameState.WORLD;
                 gp.music.resumeAll();
                 gp.delta = 0;
             }

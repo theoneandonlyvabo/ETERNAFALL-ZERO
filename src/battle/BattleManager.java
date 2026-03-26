@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import main.GamePanel;
+import main.GameState;
 
 public class BattleManager {
 
@@ -49,7 +50,7 @@ public class BattleManager {
         this.phase       = Phase.OFFENSE;
         this.battleLog   = "";
         this.feedbackMsg = "";
-        gp.gameState     = GamePanel.battleState;
+        gp.gameState     = GameState.BATTLE;
     }
 
     // -------------------------------------------------------------------------

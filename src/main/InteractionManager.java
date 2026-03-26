@@ -34,7 +34,7 @@ public class InteractionManager {
 
         // Kalau dialog aktif, buang interactPressed dan skip
         if (gp.dialogManager.isActive) {
-            gp.keyH.interactPressed = false;
+            gp.keyHandler.interactPressed = false;
             return;
         }
 
@@ -59,7 +59,7 @@ public class InteractionManager {
             return;
         }
 
-        FacingDirection lastDir = gp.keyH.lastDir;
+        FacingDirection lastDir = gp.keyHandler.lastDir;
         candidates.sort((a, b) -> {
             int alignA = getAlignmentScore(a, lastDir);
             int alignB = getAlignmentScore(b, lastDir);
@@ -72,9 +72,9 @@ public class InteractionManager {
 
         currentTarget = candidates.get(0);
 
-        if (gp.keyH.interactPressed) {
+        if (gp.keyHandler.interactPressed) {
             currentTarget.interact();
-            gp.keyH.interactPressed = false;
+            gp.keyHandler.interactPressed = false;
         }
     }
 
@@ -102,7 +102,7 @@ public class InteractionManager {
 
     public void draw(Graphics2D g2) {
         if (currentTarget == null || promptIcon == null) return;
-        if (gp.gameState == GamePanel.pausedState) return;
+        if (gp.gameState == GameState.PAUSED) return;
         if (gp.dialogManager.isActive) return;
 
         int screenX = currentTarget.getWorldX() - gp.player.worldX + gp.player.screenX;

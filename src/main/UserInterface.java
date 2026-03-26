@@ -33,7 +33,7 @@ public class UserInterface {
     public void draw(Graphics2D g2) {
 
         // World UI — selalu draw kecuali battle
-        if (gp.gameState != GamePanel.battleState) {
+        if (gp.gameState != GameState.BATTLE) {
             hud.draw(g2);
 
             UI_ActionBar.Mode mode = actionBar.getMode();
@@ -46,12 +46,12 @@ public class UserInterface {
         }
 
         // Paused overlay — draw di atas segalanya
-        if (gp.gameState == GamePanel.pausedState) {
+        if (gp.gameState == GameState.PAUSED) {
             paused.draw(g2);
         }
 
         // Battle UI
-        if (gp.gameState == GamePanel.battleState) {
+        if (gp.gameState == GameState.BATTLE) {
             // TODO: battle UI
         }
     }

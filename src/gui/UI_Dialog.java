@@ -188,7 +188,7 @@ public class UI_Dialog {
     // =========================================================
     private void drawIcon(Graphics2D g2, int boxX, int boxY) {
 
-        Interactable target = gp.interactionM.currentTarget;
+        Interactable target = gp.interactionManager.currentTarget;
         if (target == null) return;
 
         String path = target.getIconPath();

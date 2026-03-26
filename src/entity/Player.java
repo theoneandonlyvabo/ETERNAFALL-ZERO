@@ -12,7 +12,7 @@ import main.KeyHandler;
 
 public class Player extends Entity {
 
-    KeyHandler keyH;
+    KeyHandler keyHandler;
 
     public final int screenX;
     public final int screenY;
@@ -52,11 +52,11 @@ public class Player extends Entity {
     // -------------------------
     public String currentPath;
 
-    public Player(GamePanel gp, KeyHandler keyH) {
+    public Player(GamePanel gp, KeyHandler keyHandler) {
 
         super(gp);
 
-        this.keyH = keyH;
+        this.keyHandler = keyHandler;
 
         screenX = gp.screenWidth  / 2 - gp.tileSize / 2;
         screenY = gp.screenHeight / 2 - gp.tileSize / 2;
@@ -148,22 +148,22 @@ public class Player extends Entity {
 
     public void update() {
 
-        if (keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed) {
+        if (keyHandler.upPressed || keyHandler.downPressed || keyHandler.leftPressed || keyHandler.rightPressed) {
 
-            if      (keyH.upPressed)    direction = "up";
-            else if (keyH.downPressed)  direction = "down";
-            else if (keyH.leftPressed)  direction = "left";
-            else if (keyH.rightPressed) direction = "right";
+            if      (keyHandler.upPressed)    direction = "up";
+            else if (keyHandler.downPressed)  direction = "down";
+            else if (keyHandler.leftPressed)  direction = "left";
+            else if (keyHandler.rightPressed) direction = "right";
 
             collisionMade = false;
-            gp.cChecker.checkTile(this);
+            gp.collisionChecker.checkTile(this);
 
-            int objIndex = gp.cChecker.checkObject(this, true);
+            int objIndex = gp.collisionChecker.checkObject(this, true);
             if (objIndex != 999 && gp.obj[objIndex] != null) {
                 // TODO: handle object interaction
             }
 
-            gp.cChecker.checkEntity(this, gp.npc);
+            gp.collisionChecker.checkEntity(this, gp.npc);
 
             if (!collisionMade) {
                 switch (direction) {

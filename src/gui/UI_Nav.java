@@ -141,8 +141,8 @@ public class UI_Nav {
     }
 
     private void playSfxNav() {
-        gp.SFX.setFile(3);
-        gp.SFX.play(3);
+        gp.sfx.setFile(3);
+        gp.sfx.play(3);
     }
 
     // =========================================================

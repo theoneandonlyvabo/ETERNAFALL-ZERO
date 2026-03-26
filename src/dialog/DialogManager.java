@@ -74,7 +74,7 @@ public class DialogManager {
         }
         if (pendingNpcId == null) return;
         String folder = pendingNpcId.replace("npc_", "");
-        gp.SFX.playSfx("/npc/" + folder + "/sfx_" + folder + ".wav");
+        gp.sfx.playSfx("/npc/" + folder + "/sfx_" + folder + ".wav");
         sfxCooldownCounter = SFX_COOLDOWN;
     }
 
