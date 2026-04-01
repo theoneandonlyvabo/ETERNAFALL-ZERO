@@ -30,6 +30,7 @@ public class KeyHandler implements KeyListener {
     static final int NAV_MAP       = 2;
     static final int NAV_QUEST     = 3;
     static final int NAV_SETTINGS  = 4;
+    // Cancel = 5, dihandle di onConfirm() — tidak butuh konstanta
 
     public boolean upPressed, downPressed, leftPressed, rightPressed;
     public boolean interactPressed;
@@ -77,7 +78,6 @@ public class KeyHandler implements KeyListener {
                 case KeyEvent.VK_D -> gp.playerPanel.onRight();
                 case KeyEvent.VK_E -> gp.playerPanel.onConfirm();
                 default -> {
-                    // TAB atau ESC: kalau context buka tutup context, kalau tidak balik ke nav
                     if (code == KEY_NAV || code == KEY_PAUSE) {
                         if (gp.playerPanel.contextOpen) {
                             gp.playerPanel.onCancel();
@@ -94,14 +94,14 @@ public class KeyHandler implements KeyListener {
         // ── Nav open ──
         if (gp.nav.isOpen()) {
 
-            if (code == KEY_NAV) { gp.nav.onTab(); return; }
+            // TAB dan ESC perilaku identik
+            if (code == KEY_NAV || code == KEY_PAUSE) { gp.nav.onTab(); return; }
 
             if (gp.nav.panelOpen) {
                 if (code == KEY_PLAYER)    { gp.nav.onShortcut(NAV_PLAYER);    return; }
                 if (code == KEY_INVENTORY) { gp.nav.onShortcut(NAV_INVENTORY); return; }
                 if (code == KEY_MAP)       { gp.nav.onShortcut(NAV_MAP);       return; }
                 if (code == KEY_QUEST)     { gp.nav.onShortcut(NAV_QUEST);     return; }
-                if (code == KEY_PAUSE)     { gp.nav.onShortcut(NAV_SETTINGS);  return; }
                 return;
             }
 
@@ -113,7 +113,6 @@ public class KeyHandler implements KeyListener {
             if (code == KEY_INVENTORY) { gp.nav.onShortcut(NAV_INVENTORY); return; }
             if (code == KEY_MAP)       { gp.nav.onShortcut(NAV_MAP);       return; }
             if (code == KEY_QUEST)     { gp.nav.onShortcut(NAV_QUEST);     return; }
-            if (code == KEY_PAUSE)     { gp.nav.onShortcut(NAV_SETTINGS);  return; }
 
             return;
         }
@@ -125,7 +124,7 @@ public class KeyHandler implements KeyListener {
         if (code == KEY_RIGHT) { rightPressed = true; lastDir = FacingDirection.RIGHT; }
         if (code == KEY_INTERACT) interactPressed = true;
 
-        if (code == KEY_NAV) {
+        if (code == KEY_NAV || code == KEY_PAUSE) {
             if (!isMoving() && gp.gameState == GameState.WORLD && !gp.dialogManager.isActive) {
                 gp.nav.onTab();
             }
@@ -137,18 +136,6 @@ public class KeyHandler implements KeyListener {
             if (code == KEY_INVENTORY) { gp.nav.onShortcut(NAV_INVENTORY); return; }
             if (code == KEY_MAP)       { gp.nav.onShortcut(NAV_MAP);       return; }
             if (code == KEY_QUEST)     { gp.nav.onShortcut(NAV_QUEST);     return; }
-        }
-
-        if (code == KEY_PAUSE) {
-            if (gp.gameState == GameState.WORLD) {
-                gp.gameState = GameState.PAUSED;
-                gp.music.pauseAll();
-                gp.delta = 0;
-            } else if (gp.gameState == GameState.PAUSED) {
-                gp.gameState = GameState.WORLD;
-                gp.music.resumeAll();
-                gp.delta = 0;
-            }
         }
 
         if (code == KEY_DEBUG) checkDrawTime = !checkDrawTime;

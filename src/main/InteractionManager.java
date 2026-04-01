@@ -61,13 +61,12 @@ public class InteractionManager {
 
         FacingDirection lastDir = gp.keyHandler.lastDir;
         candidates.sort((a, b) -> {
+            float distA = getDistance(gp.player.worldX, gp.player.worldY, a.getWorldX(), a.getWorldY());
+            float distB = getDistance(gp.player.worldX, gp.player.worldY, b.getWorldX(), b.getWorldY());
+            if (Math.abs(distA - distB) > 20f) return Float.compare(distA, distB);
             int alignA = getAlignmentScore(a, lastDir);
             int alignB = getAlignmentScore(b, lastDir);
-            if (alignB != alignA) return alignB - alignA;
-            return Float.compare(
-                getDistance(gp.player.worldX, gp.player.worldY, a.getWorldX(), a.getWorldY()),
-                getDistance(gp.player.worldX, gp.player.worldY, b.getWorldX(), b.getWorldY())
-            );
+            return alignB - alignA;
         });
 
         currentTarget = candidates.get(0);
